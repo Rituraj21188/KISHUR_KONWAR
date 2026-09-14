@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kishur Konwar | GIS & Civil Engineering Consultancy</title>
+
+  <!-- External Styles & Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <style>
+    :root {
+      --bg: #070a10;
+      --card-bg: #0e1524;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(56, 189, 248, 0.3);
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.15);
+      --accent-amber: #f59e0b;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Top Navigation */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(7, 10, 16, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.9rem 2rem;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+    .brand-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 10px #10b981;
+    }
+    .nav-links { display: flex; gap: 1.5rem; }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* Hero Section */
+    .hero {
+      position: relative;
+      padding: 6rem 2rem 4rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: left;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid var(--border-accent);
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1.2rem;
+    }
+    .hero-title {
+      font-size: 2.8rem;
+      line-height: 1.2;
+      font-weight: 800;
+      max-width: 900px;
+      margin-bottom: 1.5rem;
+    }
+    .hero-title span {
+      background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-desc {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-width: 800px;
+      margin-bottom: 2.5rem;
+    }
+
+    /* Key Technical Metrics */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .metric-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 1.4rem;
+      border-radius: 10px;
+      border-left: 3px solid var(--accent);
+    }
+    .metric-val { font-size: 2rem; font-weight: 700; color: #fff; }
+    .metric-label { font-size: 0.82rem; color: var(--text-muted); text-transform: uppercase; margin-top: 4px; }
+
+    /* Layout Sections */
+    .section-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+    .section-head {
+      margin-bottom: 2rem;
+    }
+    .section-tag {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--accent-amber);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* Interactive Filter Bar */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 2rem;
+    }
+    .filter-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .filter-btn.active, .filter-btn:hover {
+      background: var(--accent);
+      color: #070a10;
+      border-color: var(--accent);
+    }
+
+    /* Project Cards Grid */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.5rem;
+    }
+    .project-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.6rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s, border-color 0.2s;
+      cursor: pointer;
+    }
+    .project-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+    }
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .badge {
+      font-size: 0.72rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .status-badge {
+      font-size: 0.72rem;
+      color: #10b981;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.6rem;
+    }
+    .card-summary {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 1.2rem;
+      flex-grow: 1;
+    }
+    .card-tech-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 1.2rem;
+    }
+    .chip {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(56, 189, 248, 0.08);
+      color: #cbd5e1;
+    }
+    .inspect-btn {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.6rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+    .inspect-btn:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Live Hardware Deck */
+    .deck-container {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: center;
+    }
+    .hardware-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .hw-selector-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 1rem;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s;
+    }
+    .hw-selector-btn.active {
+      background: rgba(56, 189, 248, 0.1);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .hw-display {
+      background: #070a10;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2rem;
+    }
+    .hw-display h3 { font-size: 1.4rem; margin-bottom: 0.5rem; color: var(--accent); }
+    .hw-stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .hw-stat-box {
+      background: var(--card-bg);
+      padding: 1rem;
+      border-radius: 6px;
+      border-left: 2px solid var(--accent);
+    }
+    .hw-stat-label { font-size: 0.75rem; color: var(--text-muted); }
+    .hw-stat-val { font-size: 1.1rem; font-weight: 700; color: #fff; }
+
+    /* Spatial Map Simulation Widget */
+    .map-widget-container {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--card-bg);
+    }
+    .map-header {
+      padding: 1rem 1.5rem;
+      background: #111827;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .map-ctrl-group { display: flex; gap: 8px; }
+    .map-pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      font-size: 0.78rem;
+      border-radius: 4px;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+    .map-pill.active { background: var(--accent); color: #000; font-weight: 600; }
+    #interactive-map { height: 440px; width: 100%; background: #0b0f17; }
+
+    /* Modal Project Drawer */
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .drawer-overlay.active { display: flex; }
+    .drawer-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-accent);
+      border-radius: 12px;
+      max-width: 650px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 2rem;
+      position: relative;
+    }
+    .drawer-close {
+      position: absolute;
+      top: 1.2rem;
+      right: 1.2rem;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.3rem;
+      cursor: pointer;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 3rem 2rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      background: #04070c;
+    }
+
+    @media (max-width: 768px) {
+      .hero-title { font-size: 2rem; }
+      .deck-container { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Navbar -->
+  <nav class="nav">
+    <div class="nav-brand">
+      <div class="brand-indicator"></div>
+      <span>KISHUR KONWAR & ASSOCIATES</span>
+    </div>
+    <div class="nav-links">
+      <a href="#capabilities">CAPABILITIES</a>
+      <a href="#projects">COMPLETED WORKS</a>
+      <a href="#equipment">HARDWARE DECK</a>
+      <a href="#gis-preview">SPATIAL RADAR</a>
+      <a href="#contact">CONTACT</a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="hero-badge"><i class="fa-solid fa-satellite-dish"></i> SURVEY-GRADE SPATIAL ENGINEERING</div>
+    <h1 class="hero-title">High-Precision Geospatial, Bathymetric & <span>Civil Engineering Works</span></h1>
+    <p class="hero-desc">
+      Delivering specialized engineering survey intelligence across Northeast India. Proven record in aerial LiDAR, hydrographic bed-profiling, 1D/2D HEC-RAS hydraulic modeling, and turnkey DPR formulation for mission-critical infrastructure.
+    </p>
+
+    <div class="metric-grid">
+      <div class="metric-card">
+        <div class="metric-val">59 km</div>
+        <div class="metric-label">Corridor Drone Survey</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val">38+ sq.km</div>
+        <div class="metric-label">High-Res Aerial LiDAR</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val">34+ sq.km</div>
+        <div class="metric-label">Bathymetric River Profiling</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val">25 Sites</div>
+        <div class="metric-label">CWC Catchment Network</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Projects Section with Interactive Scope Filtering -->
+  <section class="section-wrap" id="projects">
+    <div class="section-head">
+      <span class="section-tag">COMPLETED CONTRACTS</span>
+      <h2 class="section-title">Major Engineering Executions</h2>
+    </div>
+
+    <!-- Filter Buttons -->
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterProjects('all', this)">All Projects</button>
+      <button class="filter-btn" onclick="filterProjects('uav', this)">Airborne LiDAR & UAV</button>
+      <button class="filter-btn" onclick="filterProjects('hydro', this)">Hydrographic & River Surveys</button>
+      <button class="filter-btn" onclick="filterProjects('dpr', this)">DPR & Feasibility Studies</button>
+    </div>
+
+    <div class="projects-grid" id="project-container">
+      <!-- Dynamic Project cards loaded via JavaScript -->
+    </div>
+  </section>
+
+  <!-- Hardware Fleet Section -->
+  <section class="section-wrap" id="equipment">
+    <div class="section-head">
+      <span class="section-tag">FLEET INVENTORY</span>
+      <h2 class="section-title">Survey-Grade Instrumentation</h2>
+    </div>
+
+    <div class="deck-container">
+      <div class="hardware-controls" id="hw-controls">
+        <!-- Rendered by JS -->
+      </div>
+      <div class="hw-display" id="hw-screen">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Map Simulation Section -->
+  <section class="section-wrap" id="gis-preview">
+    <div class="section-head">
+      <span class="section-tag">GEOSPATIAL REACH</span>
+      <h2 class="section-title">Operational Deployment Footprint</h2>
+    </div>
+
+    <div class="map-widget-container">
+      <div class="map-header">
+        <span style="font-size: 0.85rem; font-weight: 600; color: #cbd5e1;"><i class="fa-solid fa-layer-group"></i> GIS Sector Layer Switcher</span>
+        <div class="map-ctrl-group">
+          <button class="map-pill active" onclick="switchMapLayer('all', this)">All Nodes</button>
+          <button class="map-pill" onclick="switchMapLayer('river', this)">Brahmaputra Reach</button>
+          <button class="map-pill" onclick="switchMapLayer('highway', this)">Corridors</button>
+        </div>
+      </div>
+      <div id="interactive-map"></div>
+    </div>
+  </section>
+
+  <!-- Detail Modal -->
+  <div class="drawer-overlay" id="detail-drawer" onclick="closeDrawer(event)">
+    <div class="drawer-card" id="drawer-content">
+      <button class="drawer-close" onclick="closeDrawerDirect()"><i class="fa-solid fa-xmark"></i></button>
+      <div id="drawer-body"></div>
+    </div>
+  </div>
+
+  <!-- Contact & Office -->
+  <footer id="contact">
+    <h3 style="color: #fff; font-size: 1.3rem; margin-bottom: 0.5rem;">Kishur Konwar</h3>
+    <p>Lead Consultant & Proprietor | GIS & Civil Engineering Consultancy</p>
+    <p style="margin: 0.5rem 0 1.5rem;">1st Floor, N.R. Market, Boarding Road, Sivasagar, Assam - 785640</p>
+    <a href="mailto:kishur.konwar@gmail.com" style="color: var(--accent); text-decoration: none; font-weight: 600;">
+      <i class="fa-solid fa-envelope"></i> kishur.konwar@gmail.com
+    </a>
+  </footer>
+
+  <!-- Leaflet & Applet Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // =========================================================================
+    // 1. PROJECT DATASET (Pure Technical Scope - Financials Excluded)
+    // =========================================================================
+    const projectData = [
+      {
+        id: "buridehing",
+        category: "dpr",
+        title: "Buridehing Basin Flood & Erosion Management DPR",
+        dept: "Executive Engineer, Dibrugarh W.R. Division, Assam",
+        summary: "Turnkey preparation of Detailed Project Report (DPR) incorporating complete topographic surveys, bank line erosion analysis, and geotechnical profiling.",
+        tags: ["DPR Formulation", "Flood Protection", "Erosion Control", "Cross-Sections"],
+        specs: [
+          "Full-spectrum river basin hydrological analysis",
+          "Sub-surface geotechnical soil investigations",
+          "Comprehensive Bill of Quantities (BOQ) calculation and alignment drafting",
+          "Completion Certificate No: EE/Dib/WRD/2020-21/CRC1-/226"
+        ]
+      },
+      {
+        id: "nh61",
+        category: "uav",
+        title: "NH-61 (New NH-02) Road Widening UAV Mapping",
+        dept: "Ministry of Road Transport & Highways (MoRTH)",
+        summary: "59.00 km linear corridor mapping via enterprise drones with GIS cadastral extraction for highway expansion.",
+        tags: ["MoRTH", "59 km Corridor", "Photogrammetry", "GIS Cadastre"],
+        specs: [
+          "59 km total corridor length with average width of 100 m",
+          "High-resolution geo-referenced orthomosaic covering complete Right-of-Way (ROW)",
+          "GIS base mapping with structure quantification and affected dwelling census",
+          "Clean certificate issued without penalties or liquidated damages"
+        ]
+      },
+      {
+        id: "dinjan",
+        category: "uav",
+        title: "Dinjan Army Camp Flood Protection Scheme (Pkg 6)",
+        dept: "Addl. Chief Engineer, Upper Assam Zone, WR Dept.",
+        summary: "Multi-tiered pre-construction survey integrating airborne LiDAR, watershed DTM modeling, and drainage alignment.",
+        tags: ["Airborne LiDAR", "Bathymetry", "0.25m Contours", "Defense Works"],
+        specs: [
+          "8.28 sq. km airborne LiDAR survey delivering 10 cm resolution DTM",
+          "Topographic contour generation down to 0.25 m interval",
+          "16.65 km drainage profile alignment with 10 m interval cross-sections",
+          "14.75 sq. km hydrographic sounding across river and reservoir beds at 5m grid intervals"
+        ]
+      },
+      {
+        id: "iitg",
+        category: "hydro",
+        title: "Brahmaputra River Hydraulic Modeling Surveys",
+        dept: "IIT Guwahati / Water Resources Department",
+        summary: "High-density aerial LiDAR scanning and multi-beam bathymetric profiling for IIT Guwahati hydrodynamic research.",
+        tags: ["IIT Guwahati", "LiDAR", "ADCP Bathymetry", "Hydrodynamic Flow"],
+        specs: [
+          "38 sq. km aerial LiDAR covering Dibrugarh Town, Oakland, and Pukhurijan reaches",
+          "20 sq. km riverbank photogrammetry and dry-bed topographic contouring",
+          "20 sq. km river reach bathymetric sounding",
+          "Dataset integrated directly into hydrodynamic simulation models"
+        ]
+      },
+      {
+        id: "expressway",
+        category: "hydro",
+        title: "Brahmaputra Express Highway Corridor Surveys",
+        dept: "Tezpur & Dibrugarh WR Divisions, Assam",
+        summary: "Comprehensive dual-bank topographic and hydrographic investigations spanning Sonitpur, Biswanath, and Dibrugarh reaches.",
+        tags: ["Highway Alignment", "Both Banks", "Cross-Sectioning", "Hydrology"],
+        specs: [
+          "Extensive dual-bank river profiling across major geographic districts",
+          "Deep-water echo-sounding grid profiles",
+          "Bankline geometry demarcation and baseline control point establishment"
+        ]
+      },
+      {
+        id: "cwc",
+        category: "hydro",
+        title: "CWC Hydrological Benchmark & Catchment Computation",
+        dept: "Central Water Commission (CWC), Upper Brahmaputra",
+        summary: "Establishment of permanent benchmark elevations and watershed runoff calculation for 25 observation sites across Assam and Arunachal Pradesh.",
+        tags: ["CWC", "Arunachal & Assam", "Runoff Analysis", "25 Sites"],
+        specs: [
+          "Precision DGPS network stakeouts and vertical datum benchmark pillars",
+          "Watershed and catchment area delineation across rugged Himalayan terrain",
+          "Runoff coefficient modeling and discharge calibration data"
+        ]
+      }
+    ];
+
+    // Render Projects
+    function renderProjects(items) {
+      const container = document.getElementById("project-container");
+      container.innerHTML = "";
+
+      items.forEach(p => {
+        const card = document.createElement("div");
+        card.className = "project-card";
+        card.onclick = () => openDrawer(p.id);
+
+        card.innerHTML = `
+          <div>
+            <div class="card-meta">
+              <span class="badge">${p.dept.split(",")[0]}</span>
+              <span class="status-badge"><i class="fa-solid fa-circle-check"></i> Completed</span>
+            </div>
+            <h3 class="card-title">${p.title}</h3>
+            <p class="card-summary">${p.summary}</p>
+            <div class="card-tech-chips">
+              ${p.tags.map(t => `<span class="chip">${t}</span>`).join("")}
+            </div>
+          </div>
+          <button class="inspect-btn">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> Inspect Work Scope
+          </button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function filterProjects(cat, btn) {
+      document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      if (cat === "all") {
+        renderProjects(projectData);
+      } else {
+        renderProjects(projectData.filter(p => p.category === cat));
+      }
+    }
+
+    // Modal Drawer logic
+    function openDrawer(id) {
+      const p = projectData.find(item => item.id === id);
+      const drawer = document.getElementById("detail-drawer");
+      const body = document.getElementById("drawer-body");
+
+      body.innerHTML = `
+        <div style="margin-bottom: 1.5rem;">
+          <span class="badge">${p.dept}</span>
+          <h2 style="font-size: 1.6rem; color: #fff; margin-top: 0.6rem;">${p.title}</h2>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">${p.summary}</p>
+        <h4 style="font-size: 0.85rem; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 0.8rem;">TECHNICAL SPECIFICATIONS</h4>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 2rem;">
+          ${p.specs.map(s => `
+            <li style="font-size: 0.88rem; color: #e2e8f0; display: flex; gap: 10px; align-items: flex-start;">
+              <i class="fa-solid fa-angle-right" style="color: var(--accent); margin-top: 4px;"></i>
+              <span>${s}</span>
+            </li>
+          `).join("")}
+        </ul>
+        <div style="padding: 1rem; border-radius: 8px; background: rgba(56, 189, 248, 0.05); border: 1px solid var(--border-accent); font-size: 0.8rem; color: var(--text-muted);">
+          Verified institutional record complete without penalties or liquidated damages.
+        </div>
+      `;
+
+      drawer.classList.add("active");
+    }
+
+    function closeDrawer(e) {
+      if (e.target.id === "detail-drawer") {
+        document.getElementById("detail-drawer").classList.remove("active");
+      }
+    }
+    function closeDrawerDirect() {
+      document.getElementById("detail-drawer").classList.remove("active");
+    }
+
+    // =========================================================================
+    // 2. HARDWARE PLATFORM FLEET
+    // =========================================================================
+    const hardwareFleet = [
+      {
+        id: "apache6",
+        name: "CHCNAV APACHE 6",
+        category: "Multibeam Bathymetry USV",
+        runtime: "120 min Autonomous",
+        coverage: "20 - 25 Hectares / Battery",
+        useCase: "Autonomous riverbed & reservoir hydrographic sounding. Triple-hull design equipped for high-current environments.",
+        sensors: "Dual-frequency acoustic depth sounders, GNSS RTK heading sensor."
+      },
+      {
+        id: "m400",
+        name: "DJI Matrice 400 RTK",
+        category: "High-Altitude Enterprise UAV",
+        runtime: "40 - 50 min",
+        coverage: "250 - 300 Hectares / Set",
+        useCase: "Dense airborne LiDAR scanning and terrain penetrative modeling down to 10 cm vertical accuracy.",
+        sensors: "Survey-grade LiDAR module, High-res RGB photogrammetry sensor."
+      },
+      {
+        id: "m350",
+        name: "DJI Matrice 350 RTK",
+        category: "Survey Flagship UAV",
+        runtime: "40 - 50 min",
+        coverage: "100 - 150 Hectares / Set",
+        useCase: "High-accuracy topographic mapping, linear corridor profiling, and structure enumeration.",
+        sensors: "Mechanical shutter cameras, multispectral imaging systems."
+      },
+      {
+        id: "trinity",
+        name: "Quantum Systems Trinity F90+",
+        category: "Long-Range eVTOL Fixed-Wing",
+        runtime: "90 min",
+        coverage: "200 - 300 Hectares / Flight",
+        useCase: "Large-scale linear infrastructure surveys, highway expansions, and regional river corridor mapping.",
+        sensors: "Payload compartment for high-resolution 42MP RGB and multispectral sensors."
+      },
+      {
+        id: "dgps",
+        name: "CHCNAV i85 / Multi-Frequency DGPS",
+        category: "Millimeter Ground Control Network (6 Units)",
+        runtime: "8+ Hours Operational",
+        coverage: "Dynamic Range Baseline",
+        useCase: "Static and RTK ground control point (GCP) establishment, PPK corrections, and benchmark staking.",
+        sensors: "Multi-constellation GNSS (GPS, GLONASS, Galileo, BeiDou)."
+      }
+    ];
+
+    function renderHardware() {
+      const controls = document.getElementById("hw-controls");
+      controls.innerHTML = "";
+
+      hardwareFleet.forEach((hw, idx) => {
+        const btn = document.createElement("div");
+        btn.className = `hw-selector-btn ${idx === 0 ? "active" : ""}`;
+        btn.onclick = () => selectHardware(hw.id, btn);
+        btn.innerHTML = `
+          <i class="fa-solid fa-microchip" style="color: var(--accent);"></i>
+          <div>
+            <div style="font-weight: 700; font-size: 0.95rem;">${hw.name}</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">${hw.category}</div>
+          </div>
+        `;
+        controls.appendChild(btn);
+      });
+
+      renderHwDisplay(hardwareFleet[0]);
+    }
+
+    function selectHardware(id, btn) {
+      document.querySelectorAll(".hw-selector-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const selected = hardwareFleet.find(h => h.id === id);
+      renderHwDisplay(selected);
+    }
+
+    function renderHwDisplay(hw) {
+      const screen = document.getElementById("hw-screen");
+      screen.innerHTML = `
+        <span class="badge">${hw.category}</span>
+        <h3 style="margin-top: 0.5rem;">${hw.name}</h3>
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.5rem;">${hw.useCase}</p>
+
+        <div class="hw-stat-grid">
+          <div class="hw-stat-box">
+            <div class="hw-stat-label">OPERATION TIME</div>
+            <div class="hw-stat-val">${hw.runtime}</div>
+          </div>
+          <div class="hw-stat-box">
+            <div class="hw-stat-label">EST. COVERAGE</div>
+            <div class="hw-stat-val">${hw.coverage}</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 1.2rem; font-size: 0.8rem; color: #cbd5e1; border-top: 1px solid var(--border); padding-top: 1rem;">
+          <strong style="color: var(--accent);">Integrated Sensors:</strong> ${hw.sensors}
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // 3. INTERACTIVE LEAFLET MAP VISUALIZER
+    // =========================================================================
+    let map;
+    let markers = [];
+
+    const mapSites = [
+      { name: "Buridehing Basin Reach", type: "river", lat: 27.28, lng: 95.35, desc: "DPR & River Basin Erosion Studies" },
+      { name: "Dinjan Army Camp Left Bank", type: "river", lat: 27.50, lng: 95.20, desc: "Airborne LiDAR & 0.25m Contouring" },
+      { name: "NH-61 Nagaland Corridor", type: "highway", lat: 26.20, lng: 94.30, desc: "59 km Highway Drone Mapping" },
+      { name: "Dibrugarh Town Dyke (IIT-G Study)", type: "river", lat: 27.48, lng: 94.91, desc: "38 sq. km Aerial LiDAR & Hydrodynamics" },
+      { name: "Tezpur Express Highway Reach", type: "river", lat: 26.63, lng: 92.80, desc: "Dual Bank Hydrographic Surveys" }
+    ];
+
+    function initMap() {
+      // Default view over Upper Assam / Northeast corridor
+      map = L.map('interactive-map', { zoomControl: false }).setView([26.8, 94.2], 7);
+
+      // CartoDB Dark Matter tiles
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+        subdomains: 'abcd',
+        maxZoom: 16
+      }).addTo(map);
+
+      L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+      renderMarkers('all');
+    }
+
+    function renderMarkers(filter) {
+      markers.forEach(m => map.removeLayer(m));
+      markers = [];
+
+      mapSites.forEach(s => {
+        if (filter === 'all' || s.type === filter) {
+          const marker = L.circleMarker([s.lat, s.lng], {
+            radius: 7,
+            fillColor: s.type === 'highway' ? '#f59e0b' : '#38bdf8',
+            color: '#ffffff',
+            weight: 1.5,
+            opacity: 1,
+            fillOpacity: 0.85
+          }).addTo(map);
+
+          marker.bindPopup(`
+            <div style="color: #0b0f17; font-family: inherit;">
+              <strong style="font-size: 0.9rem;">${s.name}</strong><br/>
+              <span style="font-size: 0.78rem; color: #475569;">${s.desc}</span>
+            </div>
+          `);
+          markers.push(marker);
+        }
+      });
+    }
+
+    function switchMapLayer(type, btn) {
+      document.querySelectorAll(".map-pill").forEach(p => p.classList.remove("active"));
+      btn.classList.add("active");
+      renderMarkers(type);
+    }
+
+    // Init on load
+    window.addEventListener("DOMContentLoaded", () => {
+      renderProjects(projectData);
+      renderHardware();
+      initMap();
+    });
+  </script>
+</body>
+</html>
