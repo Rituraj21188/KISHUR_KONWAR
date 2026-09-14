@@ -32,12 +32,13 @@
       line-height: 1.6;
     }
 
-    /* Professional Corporate Header */
+    /* Corporate Navigation */
     .nav {
       position: sticky;
       top: 0;
       z-index: 1000;
-      background: #ffffff;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
@@ -75,10 +76,10 @@
     .hero-container {
       background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
       border-bottom: 1px solid var(--border);
-      padding: 5rem 2rem 4rem;
+      padding: 4.5rem 2rem 3.5rem;
     }
     .hero-inner {
-      max-width: 1200px;
+      max-width: 1240px;
       margin: 0 auto;
     }
     .hero-tag {
@@ -110,10 +111,76 @@
       color: var(--text-muted);
       font-size: 1.15rem;
       max-width: 850px;
-      margin-bottom: 3rem;
+      margin-bottom: 2.5rem;
     }
 
-    /* Bulk Qualitative Competency Grid (No Raw Numbers) */
+    /* Media Display Widget (IMAGE1.jpg + VIDEO1.mp4) */
+    .media-deck {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      gap: 1.8rem;
+      margin-bottom: 3rem;
+    }
+    .media-card {
+      background: #0f172a;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+    .media-banner {
+      width: 100%;
+      height: 380px;
+      object-fit: cover;
+      object-position: center bottom;
+      display: block;
+    }
+    .media-video {
+      width: 100%;
+      height: 380px;
+      object-fit: cover;
+      display: block;
+      background: #000;
+    }
+    .media-overlay-tag {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(6px);
+      padding: 5px 12px;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      border: 1px solid rgba(255,255,255,0.15);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .media-caption {
+      padding: 1rem 1.4rem;
+      background: #ffffff;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .media-caption span {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--nav-bg);
+    }
+    .media-caption small {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* Bulk Competency Matrix */
     .bulk-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -146,9 +213,9 @@
       line-height: 1.5;
     }
 
-    /* Sections */
+    /* Section Global */
     .section-wrap {
-      max-width: 1200px;
+      max-width: 1240px;
       margin: 0 auto;
       padding: 4.5rem 2rem;
     }
@@ -166,7 +233,7 @@
       color: var(--nav-bg);
     }
 
-    /* Filter Bar */
+    /* Project Filter */
     .filter-bar {
       display: flex;
       flex-wrap: wrap;
@@ -190,7 +257,7 @@
       border-color: var(--primary-blue);
     }
 
-    /* Project Cards */
+    /* Projects Grid */
     .projects-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
@@ -342,7 +409,7 @@
     .hw-stat-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
     .hw-stat-val { font-size: 1.1rem; font-weight: 700; color: var(--nav-bg); margin-top: 4px; }
 
-    /* Spatial Deployment Map Container */
+    /* OpenStreetMap GeoJSON Widget */
     .map-widget-container {
       border: 1px solid var(--border);
       border-radius: 12px;
@@ -368,7 +435,7 @@
       font-weight: 700;
       color: var(--primary-blue);
     }
-    #interactive-map { height: 480px; width: 100%; }
+    #interactive-map { height: 480px; width: 100%; background: #e2e8f0; }
 
     /* Modal Project Drawer */
     .drawer-overlay {
@@ -406,7 +473,7 @@
       cursor: pointer;
     }
 
-    /* Footer */
+    /* Corporate Footer */
     footer {
       border-top: 1px solid var(--border);
       padding: 3.5rem 2rem;
@@ -416,11 +483,12 @@
       font-size: 0.9rem;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 900px) {
+      .media-deck { grid-template-columns: 1fr; }
+      .deck-container { grid-template-columns: 1fr; }
       .nav { padding: 1rem; }
       .nav-links { display: none; }
       .hero-title { font-size: 2.1rem; }
-      .deck-container { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -446,30 +514,54 @@
       <div class="hero-tag"><i class="fa-solid fa-compass-drafting"></i> Engineering & Geospatial Practice</div>
       <h1 class="hero-title">Technical Survey, Hydrodynamics & <span>Civil Infrastructure Consulting</span></h1>
       <p class="hero-desc">
-        Specializing in high-density airborne LiDAR, automated acoustic bathymetry, 1D/2D hydrodynamic simulation, and turnkey DPR investigations across Northeast India.
+        Specializing in high-density airborne LiDAR, automated acoustic bathymetry, 1D/2D hydrodynamic simulation, and turnkey DPR investigations across Northeast India[cite: 1].
       </p>
 
-      <!-- Qualitative Bulk Matrix (No Single Project Numbers) -->
+      <!-- Media Display Widget (IMAGE1.jpg & VIDEO1.mp4) -->
+      <div class="media-deck">
+        <div class="media-card">
+          <div class="media-overlay-tag"><i class="fa-solid fa-camera"></i> FIELD FLIGHT CAPTURE</div>
+          <img src="./IMAGE1.jpg" alt="Drone Survey Execution" class="media-banner" />
+          <div class="media-caption">
+            <span>High-Altitude Flight Operations</span>
+            <small>UAV Photogrammetry & LiDAR</small>
+          </div>
+        </div>
+
+        <div class="media-card">
+          <div class="media-overlay-tag"><i class="fa-solid fa-circle-play"></i> MISSION DOCUMENTATION</div>
+          <video class="media-video" controls autoplay muted loop playsinline poster="./IMAGE1.jpg">
+            <source src="./VIDEO1.mp4" type="video/mp4" />
+            Your browser does not support HTML video.
+          </video>
+          <div class="media-caption">
+            <span>Live Survey Mobilization</span>
+            <small>Corridor & River Reach Operations</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Qualitative Bulk Matrix -->
       <div class="bulk-grid">
         <div class="bulk-card">
           <div class="bulk-icon"><i class="fa-solid fa-road"></i></div>
           <div class="bulk-title">Linear Infrastructure Corridors</div>
-          <div class="bulk-desc">Continuous high-resolution UAV orthomosaics, Right-of-Way (ROW) boundary delineation, and affected structure extraction for national highway widening.</div>
+          <div class="bulk-desc">Continuous high-resolution UAV orthomosaics, Right-of-Way (ROW) boundary delineation, and affected structure extraction for national highway widening[cite: 1].</div>
         </div>
         <div class="bulk-card">
           <div class="bulk-icon"><i class="fa-solid fa-layer-group"></i></div>
           <div class="bulk-title">Airborne LiDAR & Photogrammetry</div>
-          <div class="bulk-desc">Sub-decimeter Digital Terrain Models (DTM) and tight-interval contour profiling over heavily vegetated terrain and dyke systems.</div>
+          <div class="bulk-desc">Sub-decimeter Digital Terrain Models (DTM) and tight-interval contour profiling over heavily vegetated terrain and dyke systems[cite: 1].</div>
         </div>
         <div class="bulk-card">
           <div class="bulk-icon"><i class="fa-solid fa-water"></i></div>
           <div class="bulk-title">Hydrographic Bed Profiling</div>
-          <div class="bulk-desc">Acoustic Doppler Current Profiler (ADCP) soundings and dual-frequency sub-surface riverbed mapping for flood mitigation and research institutes.</div>
+          <div class="bulk-desc">Acoustic Doppler Current Profiler (ADCP) soundings and dual-frequency sub-surface riverbed mapping for flood mitigation and research institutes[cite: 1].</div>
         </div>
         <div class="bulk-card">
           <div class="bulk-icon"><i class="fa-solid fa-network-wired"></i></div>
           <div class="bulk-title">Watershed & Catchment Networks</div>
-          <div class="bulk-desc">Permanent DGPS benchmark network stakeouts, catchment runoff simulations, and turnkey Detailed Project Reports (DPR).</div>
+          <div class="bulk-desc">Permanent DGPS benchmark network stakeouts, catchment runoff simulations, and turnkey Detailed Project Reports (DPR)[cite: 1].</div>
         </div>
       </div>
     </div>
@@ -505,17 +597,17 @@
     </div>
   </section>
 
-  <!-- Standard OpenStreetMap Regional Reach -->
+  <!-- GeoJSON Powered Interactive Map -->
   <section class="section-wrap" id="gis-reach" style="padding-top: 0;">
     <div class="section-head">
       <span class="section-tag">DEPLOYMENT READINESS</span>
-      <h2 class="section-title">Northeast India Operational Footprint</h2>
+      <h2 class="section-title">Operational Deployment Footprint</h2>
     </div>
 
     <div class="map-widget-container">
       <div class="map-header">
-        <span class="map-status-pill"><i class="fa-solid fa-shield-halved"></i> Active Mobilization Zone: Northeast India (Assam, Meghalaya, Arunachal Pradesh, Nagaland)</span>
-        <span style="font-size: 0.8rem; color: var(--text-muted);">Standard OpenStreetMap Baseline</span>
+        <span class="map-status-pill"><i class="fa-solid fa-earth-americas"></i> Live Region Activity: map.geojson</span>
+        <span id="geojson-status" style="font-size: 0.8rem; color: var(--text-muted);">Parsing spatial vectors...</span>
       </div>
       <div id="interactive-map"></div>
     </div>
@@ -532,30 +624,30 @@
   <!-- Corporate Footer -->
   <footer id="contact">
     <h3 style="color: var(--nav-bg); font-size: 1.3rem; margin-bottom: 0.4rem;">Kishur Konwar</h3>
-    <p style="font-weight: 500;">Lead Consultant & Proprietor | GIS & Civil Engineering Consultancy</p>
-    <p style="margin: 0.4rem 0 1.2rem;">Registered Office: 1st Floor, N.R. Market, Boarding Road, Sivasagar, Assam – 785640</p>
+    <p style="font-weight: 500;">Lead Consultant & Proprietor | GIS & Civil Engineering Consultancy[cite: 1]</p>
+    <p style="margin: 0.4rem 0 1.2rem;">Registered Office: 1st Floor, N.R. Market, Boarding Road, Sivasagar, Assam – 785640[cite: 1]</p>
     <a href="mailto:kishur.konwar@gmail.com" style="color: var(--accent-blue); text-decoration: none; font-weight: 700;">
-      <i class="fa-solid fa-envelope"></i> kishur.konwar@gmail.com
+      <i class="fa-solid fa-envelope"></i> kishur.konwar@gmail.com[cite: 1]
     </a>
   </footer>
 
-  <!-- Scripts -->
+  <!-- Leaflet Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    // Project Dataset (Engineering Scopes Only - Zero Financials)
+    // Project Dataset
     const projectData = [
       {
         id: "buridehing",
         category: "dpr",
         title: "Buridehing Basin Flood & Erosion DPR",
         dept: "Executive Engineer, Dibrugarh W.R. Division, Assam",
-        summary: "Turnkey Detailed Project Report (DPR) formulation covering basin-wide bankline erosion, topography, and sub-surface geotechnical parameters.",
+        summary: "Turnkey Detailed Project Report (DPR) formulation covering basin-wide bankline erosion, topography, and sub-surface geotechnical parameters[cite: 1].",
         tags: ["DPR Formulation", "Flood Protection", "Erosion Control", "Cross-Sections"],
         specs: [
-          "Full-spectrum river basin hydrological modeling and flow estimation",
-          "Sub-surface geotechnical soil tests and riverbed stability analysis",
-          "Comprehensive Bill of Quantities (BOQ) calculation and CAD alignment drafting",
-          "Completion Certificate No: EE/Dib/WRD/2020-21/CRC1-/226"
+          "Full-spectrum river basin hydrological modeling and flow estimation[cite: 1]",
+          "Sub-surface geotechnical soil tests and riverbed stability analysis[cite: 1]",
+          "Comprehensive Bill of Quantities (BOQ) calculation and CAD alignment drafting[cite: 1]",
+          "Completion Certificate No: EE/Dib/WRD/2020-21/CRC1-/226[cite: 1]"
         ]
       },
       {
@@ -563,13 +655,13 @@
         category: "uav",
         title: "NH-61 (New NH-02) Road Widening Corridor",
         dept: "Ministry of Road Transport & Highways (MoRTH)",
-        summary: "Continuous linear corridor drone photogrammetry and cadastral extraction for highway capacity expansion.",
+        summary: "Continuous linear corridor drone photogrammetry and cadastral extraction for highway capacity expansion[cite: 1].",
         tags: ["MoRTH", "Highway Corridor", "Photogrammetry", "GIS Cadastre"],
         specs: [
-          "Corridor survey covering full Right-of-Way (ROW) and buffer boundaries",
-          "Sub-centimeter resolution orthomosaic base mapping",
-          "GIS extraction and enumeration of roadside structures and drainage channels",
-          "Delivered with verified departmental completion certification"
+          "Corridor survey covering full Right-of-Way (ROW) and buffer boundaries[cite: 1]",
+          "High-resolution orthomosaic base mapping[cite: 1]",
+          "GIS extraction and enumeration of roadside structures and drainage channels[cite: 1]",
+          "Delivered with verified departmental completion certification[cite: 1]"
         ]
       },
       {
@@ -577,13 +669,13 @@
         category: "uav",
         title: "Dinjan Army Camp Flood Protection Scheme",
         dept: "Addl. Chief Engineer, Upper Assam Zone, WR Dept.",
-        summary: "Pre-construction spatial intelligence combining aerial LiDAR terrain mapping, watershed DTM generation, and drainage bed bathymetry.",
+        summary: "Pre-construction spatial intelligence combining aerial LiDAR terrain mapping, watershed DTM generation, and drainage bed bathymetry[cite: 1].",
         tags: ["Airborne LiDAR", "Bathymetry", "0.25m Contours", "Defense Works"],
         specs: [
-          "Airborne LiDAR scanning delivering high-resolution Digital Terrain Models (DTM)",
-          "Topographic contour maps generated at 0.25 m intervals",
-          "Drainage cross-section profiles mapped at 10 m station intervals",
-          "Sub-surface bathymetric grid surveys of river and reservoir beds"
+          "Airborne LiDAR scanning delivering high-resolution Digital Terrain Models (DTM)[cite: 1]",
+          "Topographic contour maps generated down to 0.25 m intervals[cite: 1]",
+          "Drainage cross-section profiles mapped at 10 m station intervals[cite: 1]",
+          "Sub-surface bathymetric grid surveys of river and reservoir beds[cite: 1]"
         ]
       },
       {
@@ -591,13 +683,13 @@
         category: "hydro",
         title: "Brahmaputra Hydrodynamic Study Reaches",
         dept: "IIT Guwahati / Water Resources Department",
-        summary: "Aerial LiDAR topography coupled with dual-bank bathymetric sounding for hydrodynamic simulation modeling.",
+        summary: "Aerial LiDAR topography coupled with dual-bank bathymetric sounding for hydrodynamic simulation modeling[cite: 1].",
         tags: ["IIT Guwahati", "LiDAR", "ADCP Bathymetry", "Flow Modeling"],
         specs: [
-          "Aerial LiDAR across Dibrugarh Town, Oakland, and Pukhurijan reaches",
-          "Multi-beam and dual-frequency bathymetric riverbed depth sounding",
-          "Seamless integration into 1D/2D hydraulic flow models",
-          "Departmental assignment successfully closed under IIT Guwahati academic guidance"
+          "Aerial LiDAR across Dibrugarh Town, Oakland, and Pukhurijan reaches[cite: 1]",
+          "Multi-beam and dual-frequency bathymetric riverbed depth sounding[cite: 1]",
+          "Seamless integration into 1D/2D hydraulic flow models[cite: 1]",
+          "Departmental assignment successfully closed under IIT Guwahati academic guidance[cite: 1]"
         ]
       },
       {
@@ -605,12 +697,12 @@
         category: "hydro",
         title: "Brahmaputra Express Highway Corridor Surveys",
         dept: "Tezpur & Dibrugarh WR Divisions, Assam",
-        summary: "Dual-bank topographic and hydrographic investigations along the Brahmaputra River spanning Sonitpur, Biswanath, and Dibrugarh reaches.",
+        summary: "Dual-bank topographic and hydrographic investigations along the Brahmaputra River spanning Sonitpur, Biswanath, and Dibrugarh reaches[cite: 1].",
         tags: ["Highway Alignment", "Both Banks", "Cross-Sectioning", "Hydrology"],
         specs: [
-          "Dual-bank deep-water cross-sectional soundings",
+          "Dual-bank deep-water cross-sectional soundings[cite: 1]",
           "Bankline geometry demarcation and baseline control point establishment",
-          "Hydrographic sounding grids calibrated to local hydro-meteorological datum"
+          "Hydrographic sounding grids calibrated to local hydro-meteorological datum[cite: 1]"
         ]
       },
       {
@@ -618,12 +710,12 @@
         category: "hydro",
         title: "CWC Hydrological Benchmark & Catchment Computation",
         dept: "Central Water Commission (CWC), Upper Brahmaputra",
-        summary: "Precision DGPS benchmark establishment and watershed runoff analysis across newly opened hydrological observation sites.",
+        summary: "Precision DGPS benchmark establishment and watershed runoff analysis across newly opened hydrological observation sites[cite: 1].",
         tags: ["CWC", "Arunachal & Assam", "Runoff Analysis", "Hydrological Network"],
         specs: [
           "Precision DGPS network stakeouts and vertical datum benchmark pillars",
-          "Catchment boundary delineation across rugged Himalayan terrain",
-          "Runoff coefficient modeling and discharge calibration data across Assam and Arunachal Pradesh"
+          "Catchment boundary delineation across rugged Himalayan terrain[cite: 1]",
+          "Runoff coefficient modeling and discharge calibration data across Assam and Arunachal Pradesh[cite: 1]"
         ]
       }
     ];
@@ -688,7 +780,7 @@
           `).join("")}
         </ul>
         <div style="padding: 1rem; border-radius: 6px; background: var(--soft-blue); border: 1px solid #bfdbfe; font-size: 0.85rem; color: var(--primary-blue);">
-          Institutional project executed with formal departmental completion certificate on file.
+          Verified technical contract closed with formal departmental completion certificate[cite: 1].
         </div>
       `;
       drawer.classList.add("active");
@@ -709,8 +801,8 @@
         category: "Multibeam Bathymetry USV",
         runtime: "120 min Autonomous",
         coverage: "Standard Reservoir / River Cross-Section",
-        useCase: "Autonomous riverbed & reservoir hydrographic sounding in high-current riverine conditions.",
-        sensors: "Dual-frequency acoustic depth sounders, GNSS RTK heading sensor."
+        useCase: "Autonomous riverbed & reservoir hydrographic sounding in dynamic river reaches[cite: 1].",
+        sensors: "Dual-frequency acoustic depth sounders, GNSS RTK heading sensor[cite: 1]."
       },
       {
         id: "m400",
@@ -718,8 +810,8 @@
         category: "High-Altitude Enterprise UAV",
         runtime: "Extended Multi-Rotor",
         coverage: "High-Acreage Corridor Mission",
-        useCase: "Dense airborne LiDAR scanning and terrain-penetrative elevation modeling under vegetation.",
-        sensors: "Survey-grade LiDAR module, High-res RGB photogrammetry sensor."
+        useCase: "Dense airborne LiDAR scanning and terrain-penetrative elevation modeling under vegetation[cite: 1].",
+        sensors: "Survey-grade LiDAR module, High-res RGB photogrammetry sensor[cite: 1]."
       },
       {
         id: "m350",
@@ -727,8 +819,8 @@
         category: "Survey Flagship UAV",
         runtime: "Dual Battery Redundancy",
         coverage: "Site-Scale Engineering Mission",
-        useCase: "Photogrammetric mapping, dyke alignment verification, and structure enumeration.",
-        sensors: "Mechanical shutter metric mapping payload."
+        useCase: "Photogrammetric mapping, dyke alignment verification, and structure enumeration[cite: 1].",
+        sensors: "Mechanical shutter metric mapping payload[cite: 1]."
       },
       {
         id: "trinity",
@@ -736,8 +828,8 @@
         category: "Long-Range eVTOL Fixed-Wing",
         runtime: "90 min Mission Flight",
         coverage: "Regional Corridor / Watershed",
-        useCase: "Large-scale linear infrastructure surveys, highway alignments, and wide-basin river reaches.",
-        sensors: "High-resolution metric payload compartment."
+        useCase: "Large-scale linear infrastructure surveys, highway alignments, and wide-basin river reaches[cite: 1].",
+        sensors: "High-resolution metric payload compartment[cite: 1]."
       },
       {
         id: "dgps",
@@ -745,8 +837,8 @@
         category: "Millimeter Ground Control Network",
         runtime: "Full-Day Continuous",
         coverage: "Baselines across Northeast Reach",
-        useCase: "Static control networks, base station corrections, benchmark monuments, and RTK stakeouts.",
-        sensors: "Multi-constellation GNSS (GPS, GLONASS, Galileo, BeiDou)."
+        useCase: "Static control networks, base station corrections, benchmark monuments, and RTK stakeouts[cite: 1].",
+        sensors: "Multi-constellation GNSS (GPS, GLONASS, Galileo, BeiDou)[cite: 1]."
       }
     ];
 
@@ -802,47 +894,74 @@
       `;
     }
 
-    // Standard OpenStreetMap (Clean, Zero API Key Warnings)
+    // OpenStreetMap + map.geojson Loader
     function initMap() {
       const map = L.map('interactive-map', { scrollWheelZoom: false }).setView([26.2, 92.9], 6);
 
-      // Official free OpenStreetMap tile server
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         maxZoom: 18
       }).addTo(map);
 
-      // Northeast India Region Polygon Highlighting Deployable Operational Zone
-      const nePolygon = [
-        [27.9, 89.8],
-        [28.2, 91.7],
-        [29.4, 95.0],
-        [28.2, 97.4],
-        [27.0, 96.0],
-        [25.6, 94.8],
-        [24.0, 93.3],
-        [23.0, 92.8],
-        [24.2, 91.2],
-        [25.1, 89.8],
-        [26.0, 89.9],
-        [26.9, 90.0]
-      ];
+      const statusEl = document.getElementById('geojson-status');
 
-      const regionLayer = L.polygon(nePolygon, {
-        color: '#1e40af',
-        weight: 2,
-        fillColor: '#2563eb',
-        fillOpacity: 0.18,
-        dashArray: '5, 5'
-      }).addTo(map);
+      // Fetch the uploaded map.geojson from repository root
+      fetch('./map.geojson')
+        .then(response => {
+          if (!response.ok) throw new Error("Could not load map.geojson");
+          return response.json();
+        })
+        .then(data => {
+          const geoLayer = L.geoJSON(data, {
+            style: function (feature) {
+              return {
+                color: '#1e40af',
+                weight: 2,
+                fillColor: '#2563eb',
+                fillOpacity: 0.22,
+                dashArray: '4, 4'
+              };
+            },
+            onEachFeature: function (feature, layer) {
+              if (feature.properties) {
+                const name = feature.properties.name || feature.properties.Name || "Active Survey Boundary";
+                const desc = feature.properties.description || feature.properties.Type || "Field Mobilization Area";
+                layer.bindPopup(`
+                  <div style="font-family: inherit; padding: 4px;">
+                    <strong style="font-size: 0.95rem; color: #0f172a;">${name}</strong><br/>
+                    <span style="font-size: 0.85rem; color: #475569;">${desc}</span><br/>
+                    <small style="color: #059669; font-weight: 600;">Immediate Field Mobilization Available</small>
+                  </div>
+                `);
+              }
+            }
+          }).addTo(map);
 
-      regionLayer.bindPopup(`
-        <div style="font-family: inherit; padding: 4px;">
-          <strong style="font-size: 0.95rem; color: #0f172a;">Primary Operational Zone</strong><br/>
-          <span style="font-size: 0.85rem; color: #475569;">Northeast India: Assam, Meghalaya, Arunachal Pradesh, Nagaland</span><br/>
-          <small style="color: #059669; font-weight: 600;">Immediate Field Mobilization Available</small>
-        </div>
-      `).openPopup();
+          // Auto-fit view to bounds of the GeoJSON data
+          if (geoLayer.getBounds().isValid()) {
+            map.fitBounds(geoLayer.getBounds(), { padding: [30, 30] });
+          }
+          statusEl.innerHTML = '<span style="color: #059669; font-weight: 600;"><i class="fa-solid fa-circle-check"></i> map.geojson Loaded</span>';
+        })
+        .catch(err => {
+          console.warn("GeoJSON fetch notice:", err);
+          statusEl.innerText = "Showing regional deployment perimeter";
+
+          // Fallback regional polygon
+          const fallbackRegion = [
+            [27.9, 89.8], [28.2, 91.7], [29.4, 95.0], [28.2, 97.4],
+            [27.0, 96.0], [25.6, 94.8], [24.0, 93.3], [23.0, 92.8],
+            [24.2, 91.2], [25.1, 89.8], [26.0, 89.9], [26.9, 90.0]
+          ];
+          const fallbackLayer = L.polygon(fallbackRegion, {
+            color: '#1e40af',
+            weight: 2,
+            fillColor: '#2563eb',
+            fillOpacity: 0.18,
+            dashArray: '5, 5'
+          }).addTo(map);
+          map.fitBounds(fallbackLayer.getBounds(), { padding: [30, 30] });
+        });
     }
 
     window.addEventListener("DOMContentLoaded", () => {
