@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Urban Digital Twin - GIS & 3D Point Cloud</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- MapLibre GL JS -->
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
+
+  <!-- PMTiles Protocol v3 -->
+  <script src="https://unpkg.com/pmtiles@3.2.0/dist/pmtiles.js"></script>
+
+  <!-- Three.js + OrbitControls -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <!-- Loaders.gl for in-browser LAZ decompression -->
+  <script src="https://unpkg.com/@loaders.gl/core@3.4.4/dist/dist.min.js"></script>
+  <script src="https://unpkg.com/@loaders.gl/las@3.4.4/dist/dist.min.js"></script>
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <style>
+    body, html {
+      margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden;
+      background: #070a13; font-family: 'Inter', system-ui, sans-serif;
+      touch-action: none; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none;
+    }
+    .viewport-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+    
+    .glass-hud {
+      background: rgba(15, 23, 42, 0.90);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Safe Area Padding for iOS Notches & Home Bars */
+    .safe-top { top: calc(env(safe-area-inset-top, 0px) + 0.75rem); }
+    .safe-bottom { bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem); }
+
+    /* Custom Mobile Slider Styling */
+    input[type=range] {
+      -webkit-appearance: none;
+      background: rgba(51, 65, 85, 0.8);
+      border-radius: 9999px;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 18px;
+      width: 18px;
+      border-radius: 50%;
+      background: #38bdf8;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+    }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.3); border-radius: 4px; }
+  </style>
+</head>
+<body class="text-slate-100">
+
+  <!-- ENGINE 1: MapLibre GIS Orthomosaic View -->
+  <div id="map-engine-container" class="viewport-canvas"></div>
+
+  <!-- ENGINE 2: Dedicated Three.js Point Cloud View -->
+  <div id="three-engine-container" class="viewport-canvas hidden bg-slate-950"></div>
+
+  <!-- Top Navigation & Mode Switcher -->
+  <nav class="absolute safe-top left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 glass-hud p-1 rounded-2xl max-w-[92vw]">
+    <button id="tab-btn-ortho" class="px-3 py-1.5 md:px-4 md:py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 bg-sky-500/20 text-sky-300 border border-sky-500/30 transition whitespace-nowrap">
+      <i class="fa-solid fa-map text-xs"></i>
+      <span>Ortho GIS</span>
+    </button>
+    <button id="tab-btn-pcd" class="px-3 py-1.5 md:px-4 md:py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 text-slate-400 hover:text-slate-200 transition whitespace-nowrap">
+      <i class="fa-solid fa-cubes-stacked text-xs"></i>
+      <span>3D Cloud</span>
+    </button>
+  </nav>
+
+  <!-- Top Left Telemetry Status (Hidden on extra small devices to prevent overlap) -->
+  <header class="hidden sm:flex absolute safe-top left-4 z-20 items-center gap-2">
+    <div class="glass-hud px-3 py-1.5 rounded-xl flex items-center gap-2.5">
+      <span id="status-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+      <span id="platform-title" class="font-bold tracking-wide text-[11px] uppercase text-sky-400">Ortho GIS</span>
+      <div class="h-3 w-px bg-slate-700"></div>
+      <span id="status-text" class="text-[11px] text-slate-300">Ready</span>
+    </div>
+  </header>
+
+  <!-- Mobile Floating Action Button (FAB) to open drawer -->
+  <button id="btn-toggle-drawer" class="md:hidden absolute safe-bottom right-4 z-30 w-11 h-11 glass-hud rounded-full flex items-center justify-center text-sky-400 text-sm shadow-xl focus:outline-none">
+    <i id="fab-icon" class="fa-solid fa-sliders"></i>
+  </button>
+
+  <!-- Floating Controls Drawer / Panel -->
+  <aside id="controls-drawer" class="fixed md:absolute safe-top md:safe-top right-0 md:right-4 z-20 w-full md:w-80 max-h-[75vh] md:max-h-[calc(100vh-2.5rem)] glass-hud md:rounded-2xl rounded-t-3xl p-4 flex flex-col gap-3.5 overflow-y-auto transition-transform duration-300 translate-y-full md:translate-y-0 bottom-0 md:bottom-auto">
+    
+    <!-- Drawer Drag Bar (Mobile Only) -->
+    <div class="md:hidden w-10 h-1 bg-slate-600 rounded-full mx-auto -mt-1 mb-1"></div>
+
+    <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+      <div class="flex items-center gap-2">
+        <i id="panel-icon" class="fa-solid fa-layer-group text-sky-400 text-sm"></i>
+        <h2 id="panel-title" class="font-semibold text-xs tracking-wide uppercase text-slate-100">GIS Layer Controls</h2>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="btn-recenter" class="text-[11px] text-sky-400 hover:underline">Recenter</button>
+        <button id="btn-close-drawer" class="md:hidden text-slate-400 hover:text-white pl-2">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Ortho Section -->
+    <div id="ortho-controls-group" class="space-y-3 text-xs">
+      <div class="flex items-center justify-between">
+        <span class="text-slate-200 font-medium flex items-center gap-1.5">
+          <i class="fa-solid fa-image text-emerald-400"></i> Drone Orthomosaic
+        </span>
+        <input type="checkbox" id="toggle-ortho" checked class="accent-sky-400 w-4 h-4 cursor-pointer" />
+      </div>
+
+      <div class="flex items-center justify-between bg-slate-900/60 p-2 rounded-lg border border-slate-800">
+        <span class="text-slate-400 text-[11px]">Trim Black Border</span>
+        <input type="checkbox" id="toggle-transparent-black" checked class="accent-sky-400 w-3.5 h-3.5 cursor-pointer" />
+      </div>
+
+      <div class="space-y-1">
+        <div class="flex justify-between text-slate-400 text-[11px]">
+          <span>Opacity</span>
+          <span id="label-opacity" class="text-sky-300 font-mono">100%</span>
+        </div>
+        <input type="range" id="slider-opacity" min="0" max="100" value="100" class="w-full accent-sky-400 cursor-pointer h-1.5" />
+      </div>
+
+      <div class="space-y-1">
+        <div class="flex justify-between text-slate-400 text-[11px]">
+          <span>Brightness Boost</span>
+          <span id="label-bright" class="text-sky-300 font-mono">+25%</span>
+        </div>
+        <input type="range" id="slider-bright" min="0" max="100" value="25" class="w-full accent-sky-400 cursor-pointer h-1.5" />
+      </div>
+
+      <div class="space-y-1">
+        <div class="flex justify-between text-slate-400 text-[11px]">
+          <span>Contrast Boost</span>
+          <span id="label-contrast" class="text-sky-300 font-mono">+20%</span>
+        </div>
+        <input type="range" id="slider-contrast" min="0" max="100" value="20" class="w-full accent-sky-400 cursor-pointer h-1.5" />
+      </div>
+    </div>
+
+    <!-- 3D Point Cloud Section -->
+    <div id="pcd-controls-group" class="hidden space-y-3 text-xs">
+      <div class="flex items-center justify-between">
+        <span class="text-slate-400 text-[11px]">Color Mode</span>
+        <div class="inline-flex rounded-lg border border-slate-700 bg-slate-800/80 p-0.5">
+          <button id="btn-color-rgb" class="px-2.5 py-1 rounded text-[10px] bg-purple-500/20 text-purple-300 font-medium">True RGB</button>
+          <button id="btn-color-elevation" class="px-2.5 py-1 rounded text-[10px] text-slate-400 hover:text-slate-200 font-medium">Elevation</button>
+        </div>
+      </div>
+
+      <div class="space-y-1">
+        <div class="flex justify-between text-slate-400 text-[11px]">
+          <span>Point Size</span>
+          <span id="label-pt-size" class="text-purple-300 font-mono">1.8 px</span>
+        </div>
+        <input type="range" id="slider-pt-size" min="0.5" max="6.0" step="0.2" value="1.8" class="w-full accent-purple-400 cursor-pointer h-1.5" />
+      </div>
+
+      <!-- Quick Gestures Info -->
+      <div class="pt-2 border-t border-slate-800 text-[11px] text-slate-400 flex flex-col gap-1">
+        <div><i class="fa-solid fa-hand-pointer text-purple-400 mr-1.5"></i> <b>1 Finger:</b> Rotate 3D Cloud</div>
+        <div><i class="fa-solid fa-arrows-up-down-left-right text-purple-400 mr-1.5"></i> <b>2 Fingers:</b> Pan & Zoom Pinch</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Progress Notification Banner -->
+  <div id="loader-banner" class="hidden absolute bottom-6 left-1/2 -translate-x-1/2 z-40 glass-hud px-4 py-2 rounded-xl flex items-center gap-2.5 text-xs shadow-2xl max-w-[85vw] whitespace-nowrap">
+    <i class="fa-solid fa-circle-notch fa-spin text-sky-400"></i>
+    <span id="loader-text" class="text-slate-200 truncate">Loading...</span>
+  </div>
+
+  <script>
+    const PMTILES_URL = new URL("Urban_City_Ortho.pmtiles", window.location.href).href;
+    const LAZ_URL = new URL("Urban_Plan_Compressed.laz", window.location.href).href;
+
+    let activeEngine = 'ortho';
+    let orthoBounds = null;
+    let removeBlackBorder = true;
+    const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 768;
+
+    // =========================================================================
+    // 1. ENGINE 1: MapLibre GIS + PMTiles Orthomosaic
+    // =========================================================================
+    const tileCanvas = document.createElement('canvas');
+    tileCanvas.width = 256;
+    tileCanvas.height = 256;
+    const ctx = tileCanvas.getContext('2d', { willReadFrequently: true });
+
+    const baseProtocol = new pmtiles.Protocol();
+    maplibregl.addProtocol("pmtiles", (params, abortController) => {
+      return new Promise((resolve, reject) => {
+        baseProtocol.tile(params, abortController)
+          .then((response) => {
+            if (!removeBlackBorder || !response || !response.data) {
+              return resolve(response);
+            }
+
+            const blob = new Blob([response.data], { type: 'image/jpeg' });
+            createImageBitmap(blob).then((bitmap) => {
+              ctx.clearRect(0, 0, 256, 256);
+              ctx.drawImage(bitmap, 0, 0);
+              const imgData = ctx.getImageData(0, 0, 256, 256);
+              const data = imgData.data;
+
+              // Transparent filter for near-black JPEG boundary pixels
+              for (let i = 0; i < data.length; i += 4) {
+                const r = data[i], g = data[i + 1], b = data[i + 2];
+                if (r < 32 && g < 32 && b < 32 && Math.abs(r - g) <= 12 && Math.abs(g - b) <= 12) {
+                  data[i + 3] = 0;
+                }
+              }
+
+              ctx.putImageData(imgData, 0, 0);
+              tileCanvas.toBlob((processedBlob) => {
+                processedBlob.arrayBuffer().then((buf) => {
+                  resolve({ data: new Uint8Array(buf) });
+                });
+              }, 'image/png');
+            }).catch(() => resolve(response));
+          })
+          .catch(reject);
+      });
+    });
+
+    const p = new pmtiles.PMTiles(PMTILES_URL);
+    baseProtocol.add(p);
+
+    const map = new maplibregl.Map({
+      container: 'map-engine-container',
+      style: {
+        version: 8,
+        glyphs: "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
+        sources: {
+          'osm-basemap': {
+            type: 'raster',
+            tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+            tileSize: 256,
+            attribution: '&copy; OpenStreetMap'
+          }
+        },
+        layers: [
+          {
+            id: 'osm-layer',
+            type: 'raster',
+            source: 'osm-basemap',
+            minzoom: 0,
+            maxzoom: 20
+          }
+        ]
+      },
+      center: [91.70, 26.15],
+      zoom: 15,
+      pitch: 35,
+      antialias: true
+    });
+
+    // Mobile-friendly navigation controls
+    map.addControl(new maplibregl.NavigationControl({ visualizePitch: true, showCompass: true }), 'bottom-right');
+
+    map.on('load', async () => {
+      try {
+        const header = await p.getHeader();
+        orthoBounds = [
+          [header.minLon, header.minLat],
+          [header.maxLon, header.maxLat]
+        ];
+
+        map.addSource('local-ortho-source', {
+          type: 'raster',
+          url: `pmtiles://${PMTILES_URL}`,
+          tileSize: 256
+        });
+
+        map.addLayer({
+          id: 'local-ortho-layer',
+          type: 'raster',
+          source: 'local-ortho-source',
+          paint: {
+            'raster-opacity': 1.0,
+            'raster-brightness-max': 0.75,
+            'raster-contrast': 0.20,
+            'raster-fade-duration': 0
+          }
+        });
+
+        map.fitBounds(orthoBounds, { padding: isMobileDevice ? 20 : 50, duration: 1500 });
+        document.getElementById('status-text').innerText = "Ortho Active";
+      } catch (err) {
+        console.error("Ortho failed to load:", err);
+      }
+    });
+
+    // =========================================================================
+    // 2. ENGINE 2: Three.js Point Cloud (Touch & Mobile Optimized)
+    // =========================================================================
+    const threeContainer = document.getElementById('three-engine-container');
+    const threeScene = new THREE.Scene();
+    threeScene.background = new THREE.Color(0x070a13);
+
+    const threeCamera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 50000);
+    const threeRenderer = new THREE.WebGLRenderer({ antialias: !isMobileDevice, powerPreference: "high-performance" });
+    threeRenderer.setSize(window.innerWidth, window.innerHeight);
+    // Clamp DPR on high-density mobile screens to avoid GPU memory overhead
+    threeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+    threeContainer.appendChild(threeRenderer.domElement);
+
+    const threeControls = new THREE.OrbitControls(threeCamera, threeRenderer.domElement);
+    threeControls.enableDamping = true;
+    threeControls.dampingFactor = 0.08;
+    // Set multi-touch gestures: 1-finger rotate, 2-finger pan & pinch-zoom
+    threeControls.touches = {
+      ONE: THREE.TOUCH.ROTATE,
+      TWO: THREE.TOUCH.DOLLY_PAN
+    };
+
+    threeScene.add(new THREE.AmbientLight(0xffffff, 1.2));
+
+    let pcdMesh = null;
+    let pcdColorsRGB = null;
+    let pcdColorsElevation = null;
+    let isPcdLoaded = false;
+    let sceneBoundingRadius = 300;
+
+    async function loadPointcloudToThree() {
+      if (isPcdLoaded) return;
+
+      const banner = document.getElementById('loader-banner');
+      const bannerText = document.getElementById('loader-text');
+      banner.classList.remove('hidden');
+      bannerText.innerText = "Downloading Point Cloud...";
+
+      try {
+        const response = await fetch(LAZ_URL);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const arrayBuffer = await response.arrayBuffer();
+
+        bannerText.innerText = "Decompressing LAZ...";
+        const data = await loaders.load(arrayBuffer, loaders.LASLoader);
+
+        const pos = data.attributes.POSITION.value;
+        const totalPoints = pos.length / 3;
+
+        // Subsample adaptively: Mobile uses step=3 to ensure fluid 60FPS
+        const step = isMobileDevice ? (totalPoints > 2000000 ? 3 : 2) : (totalPoints > 2500000 ? 2 : 1);
+        const count = Math.floor(totalPoints / step);
+
+        let minX = Infinity, maxX = -Infinity;
+        let minY = Infinity, maxY = -Infinity;
+        let minZ = Infinity, maxZ = -Infinity;
+
+        for (let i = 0; i < totalPoints; i += step) {
+          const x = pos[i * 3];
+          const y = pos[i * 3 + 1];
+          const z = pos[i * 3 + 2];
+
+          if (x < minX) minX = x; if (x > maxX) maxX = x;
+          if (y < minY) minY = y; if (y > maxY) maxY = y;
+          if (z < minZ) minZ = z; if (z > maxZ) maxZ = z;
+        }
+
+        const midX = (minX + maxX) / 2;
+        const midY = (minY + maxY) / 2;
+        const midZ = (minZ + maxZ) / 2;
+
+        const isGeographicDegrees = (Math.abs(midX) <= 180 && Math.abs(midY) <= 90);
+        const latRad = (midY * Math.PI) / 180.0;
+        const metersPerDegLon = isGeographicDegrees ? (111320.0 * Math.cos(latRad)) : 1.0;
+        const metersPerDegLat = isGeographicDegrees ? 110540.0 : 1.0;
+
+        const centeredPos = new Float32Array(count * 3);
+        const rgbColors = new Float32Array(count * 3);
+        const elevColors = new Float32Array(count * 3);
+
+        const colorAttr = data.attributes.COLOR_0 ? data.attributes.COLOR_0.value : null;
+        const rangeZ = maxZ - minZ || 1.0;
+        let dst = 0;
+
+        for (let i = 0; i < totalPoints; i += step) {
+          const rawX = pos[i * 3];
+          const rawY = pos[i * 3 + 1];
+          const rawZ = pos[i * 3 + 2];
+
+          centeredPos[dst * 3]     = (rawX - midX) * metersPerDegLon;
+          centeredPos[dst * 3 + 1] = rawZ - midZ;
+          centeredPos[dst * 3 + 2] = -(rawY - midY) * metersPerDegLat;
+
+          if (colorAttr) {
+            rgbColors[dst * 3]     = colorAttr[i * 4] / 255.0;
+            rgbColors[dst * 3 + 1] = colorAttr[i * 4 + 1] / 255.0;
+            rgbColors[dst * 3 + 2] = colorAttr[i * 4 + 2] / 255.0;
+          } else {
+            rgbColors[dst * 3]     = 0.3;
+            rgbColors[dst * 3 + 1] = 0.8;
+            rgbColors[dst * 3 + 2] = 0.9;
+          }
+
+          const normZ = (rawZ - minZ) / rangeZ;
+          elevColors[dst * 3]     = Math.min(1.0, normZ * 1.5);
+          elevColors[dst * 3 + 1] = Math.max(0.1, 1.0 - Math.abs(normZ - 0.5) * 2);
+          elevColors[dst * 3 + 2] = Math.max(0.0, 1.0 - normZ * 1.5);
+
+          dst++;
+        }
+
+        pcdColorsRGB = rgbColors;
+        pcdColorsElevation = elevColors;
+
+        const extentX = (maxX - minX) * metersPerDegLon;
+        const extentY = (maxY - minY) * metersPerDegLat;
+        const extentZ = maxZ - minZ;
+        sceneBoundingRadius = Math.max(extentX, extentY, extentZ) * 0.75 || 300;
+
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.BufferAttribute(centeredPos, 3));
+        geometry.setAttribute('color', new THREE.BufferAttribute(rgbColors, 3));
+
+        const material = new THREE.PointsMaterial({
+          size: isMobileDevice ? 2.2 : 1.8,
+          vertexColors: true,
+          sizeAttenuation: true
+        });
+
+        pcdMesh = new THREE.Points(geometry, material);
+        threeScene.add(pcdMesh);
+
+        reset3DCamera();
+
+        isPcdLoaded = true;
+        banner.classList.add('hidden');
+        document.getElementById('status-text').innerText = `3D: ${count.toLocaleString()} pts`;
+
+      } catch (err) {
+        console.error("Three.js LAZ parse error:", err);
+        bannerText.innerText = "Failed to parse point cloud.";
+        setTimeout(() => banner.classList.add('hidden'), 3500);
+      }
+    }
+
+    function reset3DCamera() {
+      const dist = sceneBoundingRadius * 1.6;
+      threeCamera.position.set(0, dist * 0.8, dist * 1.1);
+      threeCamera.lookAt(0, 0, 0);
+      threeControls.target.set(0, 0, 0);
+      threeControls.update();
+    }
+
+    function animateThree() {
+      requestAnimationFrame(animateThree);
+      if (activeEngine === 'pcd') {
+        threeControls.update();
+        threeRenderer.render(threeScene, threeCamera);
+      }
+    }
+    animateThree();
+
+    // =========================================================================
+    // 3. UI, Switcher & Mobile Drawer Handlers
+    // =========================================================================
+    const btnOrthoTab = document.getElementById('tab-btn-ortho');
+    const btnPcdTab = document.getElementById('tab-btn-pcd');
+    const orthoContainer = document.getElementById('map-engine-container');
+    const orthoGroup = document.getElementById('ortho-controls-group');
+    const pcdGroup = document.getElementById('pcd-controls-group');
+    const platformTitle = document.getElementById('platform-title');
+    const panelTitle = document.getElementById('panel-title');
+    const panelIcon = document.getElementById('panel-icon');
+
+    const controlsDrawer = document.getElementById('controls-drawer');
+    const btnToggleDrawer = document.getElementById('btn-toggle-drawer');
+    const btnCloseDrawer = document.getElementById('btn-close-drawer');
+    const fabIcon = document.getElementById('fab-icon');
+
+    // Drawer Toggle (Mobile)
+    let isDrawerOpen = false;
+    function setDrawer(open) {
+      isDrawerOpen = open;
+      if (open) {
+        controlsDrawer.classList.remove('translate-y-full');
+        fabIcon.className = "fa-solid fa-xmark";
+      } else {
+        controlsDrawer.classList.add('translate-y-full');
+        fabIcon.className = "fa-solid fa-sliders";
+      }
+    }
+
+    btnToggleDrawer.addEventListener('click', () => setDrawer(!isDrawerOpen));
+    btnCloseDrawer.addEventListener('click', () => setDrawer(false));
+
+    btnOrthoTab.addEventListener('click', () => {
+      activeEngine = 'ortho';
+      btnOrthoTab.className = "px-3 py-1.5 md:px-4 md:py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 bg-sky-500/20 text-sky-300 border border-sky-500/30 transition whitespace-nowrap";
+      btnPcdTab.className = "px-3 py-1.5 md:px-4 md:py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 text-slate-400 hover:text-slate-200 transition whitespace-nowrap";
+
+      orthoContainer.classList.remove('hidden');
+      threeContainer.classList.add('hidden');
+      orthoGroup.classList.remove('hidden');
+      pcdGroup.classList.add('hidden');
+
+      platformTitle.innerText = "Ortho GIS";
+      platformTitle.className = "font-bold tracking-wide text-[11px] uppercase text-sky-400";
+      panelTitle.innerText = "GIS Layer Controls";
+      panelIcon.className = "fa-solid fa-layer-group text-sky-400 text-sm";
+
+      map.resize();
+    });
+
+    btnPcdTab.addEventListener('click', () => {
+      activeEngine = 'pcd';
+      btnPcdTab.className = "px-3 py-1.5 md:px-4 md:py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 bg-purple-500/20 text-purple-300 border border-purple-500/30 transition whitespace-nowrap";
+      btnOrthoTab.className = "px-3 py-1.5 md:px-4 md:py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 text-slate-400 hover:text-slate-200 transition whitespace-nowrap";
+
+      orthoContainer.classList.add('hidden');
+      threeContainer.classList.remove('hidden');
+      orthoGroup.classList.add('hidden');
+      pcdGroup.classList.remove('hidden');
+
+      platformTitle.innerText = "3D Cloud";
+      platformTitle.className = "font-bold tracking-wide text-[11px] uppercase text-purple-400";
+      panelTitle.innerText = "3D Point Controls";
+      panelIcon.className = "fa-solid fa-cube text-purple-400 text-sm";
+
+      threeCamera.aspect = window.innerWidth / window.innerHeight;
+      threeCamera.updateProjectionMatrix();
+      threeRenderer.setSize(window.innerWidth, window.innerHeight);
+
+      loadPointcloudToThree();
+    });
+
+    // Recenter
+    document.getElementById('btn-recenter').addEventListener('click', () => {
+      if (activeEngine === 'ortho') {
+        if (orthoBounds) map.fitBounds(orthoBounds, { padding: isMobileDevice ? 20 : 50, duration: 1500 });
+      } else {
+        reset3DCamera();
+      }
+      if (isMobileDevice) setDrawer(false);
+    });
+
+    // Ortho Settings
+    document.getElementById('toggle-ortho').addEventListener('change', (e) => {
+      if (map.getLayer('local-ortho-layer')) {
+        map.setLayoutProperty('local-ortho-layer', 'visibility', e.target.checked ? 'visible' : 'none');
+      }
+    });
+
+    document.getElementById('toggle-transparent-black').addEventListener('change', (e) => {
+      removeBlackBorder = e.target.checked;
+      const src = map.getSource('local-ortho-source');
+      if (src) {
+        map.removeLayer('local-ortho-layer');
+        map.removeSource('local-ortho-source');
+        map.addSource('local-ortho-source', { type: 'raster', url: `pmtiles://${PMTILES_URL}`, tileSize: 256 });
+        map.addLayer({
+          id: 'local-ortho-layer',
+          type: 'raster',
+          source: 'local-ortho-source',
+          paint: { 'raster-opacity': 1.0, 'raster-brightness-max': 0.75, 'raster-contrast': 0.20 }
+        });
+      }
+    });
+
+    document.getElementById('slider-opacity').addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      document.getElementById('label-opacity').innerText = `${val}%`;
+      if (map.getLayer('local-ortho-layer')) map.setPaintProperty('local-ortho-layer', 'raster-opacity', val / 100);
+    });
+
+    document.getElementById('slider-bright').addEventListener('input', (e) => {
+      const val = parseInt(e.target.value);
+      document.getElementById('label-bright').innerText = `+${val}%`;
+      if (map.getLayer('local-ortho-layer')) map.setPaintProperty('local-ortho-layer', 'raster-brightness-max', 1.0 - (val / 100));
+    });
+
+    document.getElementById('slider-contrast').addEventListener('input', (e) => {
+      const val = parseInt(e.target.value);
+      document.getElementById('label-contrast').innerText = `+${val}%`;
+      if (map.getLayer('local-ortho-layer')) map.setPaintProperty('local-ortho-layer', 'raster-contrast', val / 100);
+    });
+
+    // PCD Settings
+    document.getElementById('slider-pt-size').addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value);
+      document.getElementById('label-pt-size').innerText = `${val.toFixed(1)} px`;
+      if (pcdMesh) pcdMesh.material.size = val;
+    });
+
+    document.getElementById('btn-color-rgb').addEventListener('click', () => {
+      if (!pcdMesh || !pcdColorsRGB) return;
+      pcdMesh.geometry.setAttribute('color', new THREE.BufferAttribute(pcdColorsRGB, 3));
+      pcdMesh.geometry.attributes.color.needsUpdate = true;
+      document.getElementById('btn-color-rgb').className = "px-2.5 py-1 rounded text-[10px] bg-purple-500/20 text-purple-300 font-medium";
+      document.getElementById('btn-color-elevation').className = "px-2.5 py-1 rounded text-[10px] text-slate-400 hover:text-slate-200 font-medium";
+    });
+
+    document.getElementById('btn-color-elevation').addEventListener('click', () => {
+      if (!pcdMesh || !pcdColorsElevation) return;
+      pcdMesh.geometry.setAttribute('color', new THREE.BufferAttribute(pcdColorsElevation, 3));
+      pcdMesh.geometry.attributes.color.needsUpdate = true;
+      document.getElementById('btn-color-elevation').className = "px-2.5 py-1 rounded text-[10px] bg-purple-500/20 text-purple-300 font-medium";
+      document.getElementById('btn-color-rgb').className = "px-2.5 py-1 rounded text-[10px] text-slate-400 hover:text-slate-200 font-medium";
+    });
+
+    // Resize & Orientation Change Handling
+    function handleResize() {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      if (activeEngine === 'ortho') {
+        map.resize();
+      } else {
+        threeCamera.aspect = w / h;
+        threeCamera.updateProjectionMatrix();
+        threeRenderer.setSize(w, h);
+      }
+    }
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', () => setTimeout(handleResize, 150));
+  </script>
+</body>
+</html>
