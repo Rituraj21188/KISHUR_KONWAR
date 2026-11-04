@@ -18,7 +18,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
-  <!-- Loaders.gl for in-browser LAZ parsing -->
+  <!-- Loaders.gl for in-browser LAZ decompression -->
   <script src="https://unpkg.com/@loaders.gl/core@3.4.4/dist/dist.min.js"></script>
   <script src="https://unpkg.com/@loaders.gl/las@3.4.4/dist/dist.min.js"></script>
 
@@ -41,7 +41,6 @@
     .viewport-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
     .hidden { display: none !important; }
 
-    /* HUD Headers */
     .app-title {
       position: absolute; top: 14px; left: 14px; z-index: 500;
       background: var(--panel-bg); border: 1px solid var(--border);
@@ -50,7 +49,6 @@
     }
     .app-title span { color: var(--text-muted); font-weight: 400; font-size: 11px; display: block; font-family: var(--mono); }
 
-    /* Mode Selector Bar */
     .mode-bar {
       position: absolute; top: 14px; left: 50%; transform: translateX(-50%); z-index: 500;
       display: flex; gap: 4px; background: var(--panel-bg); border: 1px solid var(--border);
@@ -64,7 +62,6 @@
     .mode-btn.active { background: var(--accent); color: #000; }
     .mode-btn:hover:not(.active) { color: #fff; background: rgba(255,255,255,0.06); }
 
-    /* Fullscreen Toggle */
     .fullscreen-btn {
       position: absolute; top: 14px; right: 14px; z-index: 500;
       background: var(--panel-bg); border: 1px solid var(--border);
@@ -74,7 +71,6 @@
     }
     .fullscreen-btn:hover { background: #21262d; border-color: var(--accent); color: var(--accent); }
 
-    /* 2D Opacity Panel */
     .opacity-panel {
       position: absolute; bottom: 20px; left: 14px; z-index: 500;
       background: var(--panel-bg); border: 1px solid var(--border);
@@ -84,7 +80,6 @@
     .opacity-panel label { display: block; color: var(--text-muted); margin-bottom: 4px; font-family: var(--mono); font-size: 11px; }
     .opacity-panel input[type=range] { width: 100%; accent-color: var(--accent); cursor: pointer; }
 
-    /* 3D Control Panel */
     .pcd-panel {
       position: absolute; bottom: 20px; left: 14px; z-index: 500;
       background: var(--panel-bg); border: 1px solid var(--border);
@@ -93,7 +88,6 @@
     }
     .pcd-panel label { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 11px; font-family: var(--mono); }
 
-    /* 2D Legend */
     .legend {
       position: absolute; bottom: 20px; right: 14px; z-index: 500;
       background: var(--panel-bg); border: 1px solid var(--border);
@@ -110,9 +104,7 @@
       color: var(--text) !important; border-radius: 8px !important; font-family: var(--font) !important;
       backdrop-filter: blur(8px);
     }
-    .leaflet-control-layers label { font-size: 12px; }
 
-    /* Loader Banner */
     #loading-banner {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
       z-index: 2000; background: var(--panel-bg); border: 1px solid var(--accent);
@@ -123,13 +115,11 @@
 </head>
 <body>
 
-  <!-- Top Title HUD -->
   <div class="app-title">
     Mines Site Map Viewer
     <span>Orthomosaic · DSM · DTM · 3D Point Cloud</span>
   </div>
 
-  <!-- Mode Switcher -->
   <div class="mode-bar">
     <button id="tab-btn-2d" class="mode-btn active" onclick="switchViewerMode('2d')">
       <i class="fa-solid fa-map"></i> 2D WebGIS & Layers
@@ -139,27 +129,23 @@
     </button>
   </div>
 
-  <!-- Fullscreen Button -->
   <button class="fullscreen-btn" onclick="toggleFullscreen()">
     <i class="fa-solid fa-expand"></i> Fullscreen
   </button>
 
-  <!-- Loader Banner -->
   <div id="loading-banner" class="hidden">
     <i class="fa-solid fa-circle-notch fa-spin text-xl"></i>
     <span id="loading-status">Loading Model...</span>
   </div>
 
-  <!-- ================= VIEWPORT 1: LEAFLET 2D WEBGIS ================= -->
+  <!-- VIEWPORT 1: LEAFLET 2D WEBGIS -->
   <div id="map" class="viewport-canvas"></div>
 
-  <!-- 2D Opacity Tool -->
   <div class="opacity-panel" id="opacityPanel">
     <label id="opacityLabel">Orthomosaic opacity</label>
     <input type="range" id="opacitySlider" min="0" max="1" step="0.05" value="1">
   </div>
 
-  <!-- 2D Legend matching original styles -->
   <div class="legend" id="legendPanel">
     <div><span class="swatch point" style="background:#ffd700;"></span> Boundary Pillar</div>
     <div><span class="swatch line" style="background:#ff0000; border-top: 2px dashed #ff0000;"></span> Lease Boundary</div>
@@ -170,13 +156,12 @@
     <div><span class="swatch" style="background:#3cb371;"></span> Infrastructure</div>
   </div>
 
-  <!-- ================= VIEWPORT 2: THREE.JS 3D LAZ POINT CLOUD ================= -->
+  <!-- VIEWPORT 2: THREE.JS 3D POINT CLOUD -->
   <div id="three-container" class="viewport-canvas hidden"></div>
 
-  <!-- 3D Controls Tool -->
   <div class="pcd-panel hidden" id="pcdPanel">
-    <label><span>POINT SIZE</span> <span id="label-pt-size">2.0 px</span></label>
-    <input type="range" id="slider-pt-size" min="0.5" max="5.0" step="0.2" value="2.0">
+    <label><span>POINT SIZE</span> <span id="label-pt-size">2.2 px</span></label>
+    <input type="range" id="slider-pt-size" min="0.5" max="6.0" step="0.2" value="2.2">
     <label><span>COLOR SCHEME</span></label>
     <div style="display:flex; gap:6px;">
       <button id="btn-col-elev" class="mode-btn active" style="flex:1; justify-content:center; border:1px solid var(--border);" onclick="setPcdColor('elevation')">Elevation</button>
@@ -187,7 +172,6 @@
     </button>
   </div>
 
-  <!-- Script Modules -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
@@ -196,7 +180,7 @@
     const SITE_ZOOM = 17;
     const SITE_BOUNDS = L.latLngBounds([25.1830, 91.6090], [25.2020, 91.6300]);
 
-    // 1. LEAFLET ENGINE (PRESERVED ORIGINAL COLOR LOGIC)
+    // 1. LEAFLET 2D ENGINE (COLOR SHAPES PRESERVED)
     const map = L.map('map', {
       zoomControl: true,
       minZoom: 16,
@@ -212,8 +196,7 @@
     }).addTo(map);
 
     map.createPane('droneRasterPane');
-    const droneRasterPane = map.getPane('droneRasterPane');
-    droneRasterPane.style.zIndex = 400;
+    map.getPane('droneRasterPane').style.zIndex = 400;
 
     const orthoLayer = L.tileLayer('./Tiles.tif/{z}/{x}/{y}.png', {
       maxZoom: 22, maxNativeZoom: 20, tms: true, bounds: SITE_BOUNDS, pane: 'droneRasterPane'
@@ -230,7 +213,6 @@
     map.createPane('vectorPane');
     map.getPane('vectorPane').style.zIndex = 650;
 
-    // Preserved exact original color rules
     const structuresLayer = L.geoJSON(null, {
       pane: 'vectorPane',
       style: function(feature) {
@@ -290,9 +272,9 @@
       dtmLayer.setOpacity(parseFloat(opacitySlider.value));
     };
 
-    // 2. THREE.JS 3D POINT CLOUD (STREAMING mine-site-viewer.laz)
+    // 2. THREE.JS 3D ENGINE (METRIC DEGREE CONVERSION)
     let threeScene, threeCamera, threeRenderer, threeControls, pcdMesh;
-    let pcdColorsRGB, pcdColorsElevation, sceneRadius = 150;
+    let pcdColorsRGB, pcdColorsElevation, sceneRadius = 300;
     let isLazLoaded = false;
 
     function initThreeEngine() {
@@ -301,7 +283,7 @@
       threeScene.background = new THREE.Color(0x0d1117);
 
       threeCamera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 50000);
-      threeCamera.position.set(0, 140, 240);
+      threeCamera.position.set(0, 150, 260);
 
       threeRenderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
       threeRenderer.setSize(window.innerWidth, window.innerHeight);
@@ -313,9 +295,6 @@
       threeControls.dampingFactor = 0.05;
 
       threeScene.add(new THREE.AmbientLight(0xffffff, 1.4));
-      const grid = new THREE.GridHelper(300, 30, 0xf59e0b, 0x1f2937);
-      grid.position.y = -2;
-      threeScene.add(grid);
 
       window.addEventListener('resize', () => {
         if (activeMode === '3d') {
@@ -370,6 +349,12 @@
         const midY = (minY + maxY) / 2;
         const midZ = (minZ + maxZ) / 2;
 
+        // Convert Geographic Degrees to Metric Distances
+        const isGeographic = (Math.abs(midX) <= 180 && Math.abs(midY) <= 90);
+        const latRad = (midY * Math.PI) / 180.0;
+        const metersPerDegLon = isGeographic ? (111320.0 * Math.cos(latRad)) : 1.0;
+        const metersPerDegLat = isGeographic ? 110540.0 : 1.0;
+
         const centered = new Float32Array(count * 3);
         const rgb = new Float32Array(count * 3);
         const elev = new Float32Array(count * 3);
@@ -379,9 +364,11 @@
         let dst = 0;
         for (let i = 0; i < total; i += step) {
           const rx = pos[i * 3], ry = pos[i * 3 + 1], rz = pos[i * 3 + 2];
-          centered[dst * 3]     = rx - midX;
+
+          // Scaled to real-world meters
+          centered[dst * 3]     = (rx - midX) * metersPerDegLon;
           centered[dst * 3 + 1] = rz - midZ;
-          centered[dst * 3 + 2] = -(ry - midY);
+          centered[dst * 3 + 2] = -((ry - midY) * metersPerDegLat);
 
           if (colorAttr) {
             rgb[dst * 3]     = colorAttr[i * 4] / 255.0;
@@ -405,11 +392,15 @@
         geom.setAttribute('position', new THREE.BufferAttribute(centered, 3));
         geom.setAttribute('color', new THREE.BufferAttribute(elev, 3));
 
-        const mat = new THREE.PointsMaterial({ size: 2.0, vertexColors: true, sizeAttenuation: true });
+        const mat = new THREE.PointsMaterial({ size: 2.2, vertexColors: true, sizeAttenuation: true });
         pcdMesh = new THREE.Points(geom, mat);
         threeScene.add(pcdMesh);
 
-        sceneRadius = Math.max(maxX - minX, maxY - minY, maxZ - minZ) * 0.7;
+        const extentX = (maxX - minX) * metersPerDegLon;
+        const extentY = (maxY - minY) * metersPerDegLat;
+        const extentZ = maxZ - minZ;
+        sceneRadius = Math.max(extentX, extentY, extentZ) * 0.75 || 250;
+
         reset3DCamera();
 
         isLazLoaded = true;
@@ -423,7 +414,7 @@
 
     function reset3DCamera() {
       const d = sceneRadius * 1.6;
-      threeCamera.position.set(0, d * 0.7, d);
+      threeCamera.position.set(0, d * 0.75, d);
       threeCamera.lookAt(0, 0, 0);
       threeControls.target.set(0, 0, 0);
       threeControls.update();
