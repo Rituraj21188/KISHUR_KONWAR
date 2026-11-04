@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0" />
+  <title>3D Model Viewer</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      touch-action: none;
+    }
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #121214;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Loading Overlay */
+    #loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(18, 18, 20, 0.95);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      transition: opacity 0.5s ease;
+    }
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 4px solid rgba(255, 255, 255, 0.1);
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .progress-container {
+      width: 240px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    #progress-bar {
+      width: 0%;
+      height: 100%;
+      background: #3b82f6;
+      transition: width 0.2s ease;
+    }
+    #progress-text {
+      color: #e2e8f0;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+    }
+
+    /* Top Controls Bar */
+    #top-bar {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      right: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      pointer-events: none;
+      z-index: 10;
+      gap: 8px;
+    }
+    .control-group {
+      display: flex;
+      gap: 6px;
+      pointer-events: auto;
+      flex-wrap: wrap;
+    }
+    .btn {
+      background: rgba(22, 27, 34, 0.88);
+      backdrop-filter: blur(10px);
+      color: #e6edf3;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 7px 11px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      user-select: none;
+      transition: all 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn:hover {
+      background: rgba(35, 43, 54, 0.95);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    .btn:active {
+      transform: scale(0.96);
+    }
+    .btn.active {
+      background: #2563eb;
+      border-color: #3b82f6;
+      color: #ffffff;
+    }
+
+    /* Mobile / Android Gesture Status Badge */
+    #touch-status {
+      position: absolute;
+      top: 66px;
+      left: 14px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 11px;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      pointer-events: auto;
+      z-index: 10;
+      user-select: none;
+      transition: all 0.2s ease;
+    }
+    #touch-status .indicator {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 6px #22c55e;
+      transition: background 0.2s ease;
+    }
+    #touch-status.active {
+      color: #38bdf8;
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+    #touch-status.active .indicator {
+      background: #38bdf8;
+      box-shadow: 0 0 8px #38bdf8;
+    }
+    #touch-status .close-hint {
+      cursor: pointer;
+      margin-left: 4px;
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    /* Bottom Reset Button */
+    #bottom-bar {
+      position: absolute;
+      bottom: 18px;
+      right: 18px;
+      z-index: 10;
+    }
+  </style>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <div class="progress-container">
+      <div id="progress-bar"></div>
+    </div>
+    <span id="progress-text">Loading 3D Model...</span>
+  </div>
+
+  <div id="top-bar">
+    <!-- Background Themes -->
+    <div class="control-group">
+      <button class="btn active" id="bg-dark">🌑 Dark</button>
+      <button class="btn" id="bg-sky">🌤️ Sky</button>
+      <button class="btn" id="bg-sunset">🌅 Sunset</button>
+      <button class="btn" id="bg-light">⚪ Light</button>
+    </div>
+
+    <!-- Features -->
+    <div class="control-group">
+      <button class="btn" id="btn-contours">🗺️ Contours: OFF</button>
+      <button class="btn" id="btn-labels">🏷️ Labels: ON</button>
+      <button class="btn" id="btn-autorotate">⟳ Auto-Rotate: OFF</button>
+    </div>
+  </div>
+
+  <!-- Touch Notification Badge -->
+  <div id="touch-status">
+    <span class="indicator"></span>
+    <span id="touch-status-text">Touch Controls Active</span>
+    <span class="close-hint" id="touch-close" title="Dismiss">✕</span>
+  </div>
+
+  <div id="bottom-bar">
+    <button class="btn" id="btn-reset">↺ Reset View</button>
+  </div>
+
+  <div id="canvas-container"></div>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+
+    // 1. Scene & Renderer Setup
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x121214);
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 2000);
+    camera.position.set(0, 2, 5);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.0;
+    container.appendChild(renderer.domElement);
+
+    // 2. Touch Controls for Android & Desktop
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    controls.screenSpacePanning = true;
+    controls.autoRotate = false;
+    controls.autoRotateSpeed = 2.0;
+
+    controls.touches = {
+      ONE: THREE.TOUCH.ROTATE,
+      TWO: THREE.TOUCH.DOLLY_PAN
+    };
+
+    const touchBadge = document.getElementById('touch-status');
+    const touchText = document.getElementById('touch-status-text');
+    document.getElementById('touch-close').addEventListener('click', () => {
+      touchBadge.style.display = 'none';
+    });
+
+    window.addEventListener('touchstart', (e) => {
+      touchBadge.classList.add('active');
+      if (e.touches.length === 1) {
+        touchText.innerText = '1-Finger Orbiting';
+      } else if (e.touches.length >= 2) {
+        touchText.innerText = '2-Finger Zoom / Pan';
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchend', (e) => {
+      if (e.touches.length === 0) {
+        touchBadge.classList.remove('active');
+        touchText.innerText = 'Touch Controls Ready';
+      }
+    }, { passive: true });
+
+    // 3. Background Texture Presets
+    function createGradientTexture(topColor, bottomColor) {
+      const c = document.createElement('canvas');
+      c.width = 16;
+      c.height = 512;
+      const ctx = c.getContext('2d');
+      const grad = ctx.createLinearGradient(0, 0, 0, 512);
+      grad.addColorStop(0, topColor);
+      grad.addColorStop(1, bottomColor);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 16, 512);
+      const tex = new THREE.CanvasTexture(c);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      return tex;
+    }
+
+    const bgThemes = {
+      dark: new THREE.Color(0x121214),
+      sky: createGradientTexture('#38bdf8', '#e0f2fe'),
+      sunset: createGradientTexture('#3b0764', '#f97316'),
+      light: new THREE.Color(0xf1f5f9)
+    };
+
+    function setBackground(theme) {
+      scene.background = bgThemes[theme];
+      renderer.toneMappingExposure = (theme === 'light') ? 0.9 : 1.0;
+    }
+
+    const bgBtns = [
+      { id: 'bg-dark', theme: 'dark' },
+      { id: 'bg-sky', theme: 'sky' },
+      { id: 'bg-sunset', theme: 'sunset' },
+      { id: 'bg-light', theme: 'light' }
+    ];
+
+    bgBtns.forEach(({ id, theme }) => {
+      const b = document.getElementById(id);
+      b.addEventListener('click', () => {
+        bgBtns.forEach(btn => document.getElementById(btn.id).classList.remove('active'));
+        b.classList.add('active');
+        setBackground(theme);
+      });
+    });
+
+    // 4. Studio Lighting Rig
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x475569, 1.2);
+    hemiLight.position.set(0, 30, 0);
+
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.0);
+    keyLight.position.set(12, 18, 14);
+
+    const fillLight = new THREE.DirectionalLight(0xffffff, 0.9);
+    fillLight.position.set(-12, 10, -10);
+
+    scene.add(hemiLight, keyLight, fillLight);
+
+    // 5. Load Model & Contours
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+
+    const gltfLoader = new GLTFLoader();
+    gltfLoader.setDRACOLoader(dracoLoader);
+
+    const MODEL_PATH = './3DModel-v1.glb';
+    let initialCameraState = { pos: new THREE.Vector3(), target: new THREE.Vector3() };
+
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const overlay = document.getElementById('loading-overlay');
+
+    const contourGroup = new THREE.Group();
+    contourGroup.visible = false;
+    scene.add(contourGroup);
+
+    const labelGroup = new THREE.Group();
+    contourGroup.add(labelGroup);
+
+    gltfLoader.load(
+      MODEL_PATH,
+      (gltf) => {
+        const model = gltf.scene;
+
+        const box = new THREE.Box3().setFromObject(model);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+
+        model.position.sub(center);
+        scene.add(model);
+
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const fov = camera.fov * (Math.PI / 180);
+        let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2)) * 1.5;
+
+        camera.position.set(0, maxDim * 0.45, cameraZ);
+        camera.lookAt(0, 0, 0);
+        controls.target.set(0, 0, 0);
+
+        initialCameraState.pos.copy(camera.position);
+        initialCameraState.target.copy(controls.target);
+
+        loadContours('./contours.geojson', box, center, maxDim);
+
+        overlay.style.opacity = '0';
+        setTimeout(() => { overlay.style.display = 'none'; }, 500);
+      },
+      (xhr) => {
+        if (xhr.lengthComputable) {
+          const percent = Math.round((xhr.loaded / xhr.total) * 100);
+          progressBar.style.width = percent + '%';
+          progressText.innerText = `Loading 3D Model... ${percent}%`;
+        } else {
+          progressText.innerText = 'Loading 3D Model...';
+        }
+      },
+      (error) => {
+        console.error('Model load error:', error);
+        progressText.innerText = 'Failed to load model.';
+        progressText.style.color = '#ef4444';
+      }
+    );
+
+    // 6. 3D Text Badge Generator for Elevations
+    function makeElevationSprite(text, scale) {
+      const c = document.createElement('canvas');
+      c.width = 256;
+      c.height = 96;
+      const ctx = c.getContext('2d');
+
+      // Rounded badge pill
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.roundRect(8, 8, 240, 80, 20);
+      ctx.fill();
+      ctx.stroke();
+
+      // Bold text
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 36px -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, 128, 48);
+
+      const texture = new THREE.CanvasTexture(c);
+      texture.colorSpace = THREE.SRGBColorSpace;
+
+      const spriteMat = new THREE.SpriteMaterial({
+        map: texture,
+        depthTest: false,
+        depthWrite: false,
+        transparent: true
+      });
+
+      const sprite = new THREE.Sprite(spriteMat);
+      const spriteSize = scale * 0.035;
+      sprite.scale.set(spriteSize * 2.5, spriteSize, 1);
+      return sprite;
+    }
+
+    // 7. Robust Contour & Label Processor
+    function loadContours(url, modelBox, modelCenter, maxDim) {
+      fetch(url)
+        .then((res) => {
+          if (!res.ok) throw new Error('contours.geojson not found');
+          return res.json();
+        })
+        .then((geojson) => {
+          let minX = Infinity, maxX = -Infinity;
+          let minY = Infinity, maxY = -Infinity;
+          let minZ = Infinity, maxZ = -Infinity;
+
+          const lines = [];
+
+          geojson.features.forEach((f) => {
+            if (!f.geometry) return;
+            const coordsList = f.geometry.type === 'MultiLineString' 
+              ? f.geometry.coordinates 
+              : [f.geometry.coordinates];
+
+            const propElev = (f.properties && f.properties.ELEV != null) ? Number(f.properties.ELEV) : 0;
+
+            coordsList.forEach((coords) => {
+              const poly = [];
+              coords.forEach((pt) => {
+                const px = pt[0];
+                const py = pt[1];
+                const pz = (pt.length > 2 && pt[2] !== 0) ? pt[2] : propElev;
+
+                minX = Math.min(minX, px); maxX = Math.max(maxX, px);
+                minY = Math.min(minY, py); maxY = Math.max(maxY, py);
+                minZ = Math.min(minZ, pz); maxZ = Math.max(maxZ, pz);
+
+                poly.push([px, py, pz]);
+              });
+              lines.push({ poly, elevation: propElev });
+            });
+          });
+
+          const geoCenterX = (minX + maxX) / 2;
+          const geoCenterY = (minY + maxY) / 2;
+          const geoCenterZ = (minZ + maxZ) / 2;
+
+          const geoSpanX = Math.max(maxX - minX, 0.001);
+          const modelSpanX = modelBox.max.x - modelBox.min.x;
+          const scale = (modelSpanX > 0 && Math.abs(geoSpanX - modelSpanX) > 2) ? (modelSpanX / geoSpanX) : 1.0;
+
+          // Crucial: polygonOffset and depthWrite: false prevent ground occlusion
+          const normalLineMaterial = new THREE.LineBasicMaterial({
+            color: 0xf59e0b,
+            linewidth: 1.5,
+            depthTest: true,
+            depthWrite: false,
+            polygonOffset: true,
+            polygonOffsetFactor: -2.0,
+            polygonOffsetUnits: -4.0
+          });
+
+          const indexLineMaterial = new THREE.LineBasicMaterial({
+            color: 0xfbbf24,
+            linewidth: 3,
+            depthTest: true,
+            depthWrite: false,
+            polygonOffset: true,
+            polygonOffsetFactor: -3.0,
+            polygonOffsetUnits: -6.0
+          });
+
+          const labeledElevations = new Set();
+
+          lines.forEach(({ poly, elevation }) => {
+            if (poly.length < 2) return;
+            const points = [];
+            const isIndex = (elevation % 5 === 0);
+
+            poly.forEach(([gx, gy, gz]) => {
+              const x = (gx - geoCenterX) * scale;
+              // +0.35m vertical elevation offset lifts lines off ground polygons
+              const y = ((gz - geoCenterZ) * scale) + 0.35;
+              const z = -((gy - geoCenterY) * scale);
+
+              points.push(new THREE.Vector3(x, y, z));
+            });
+
+            const geom = new THREE.BufferGeometry().setFromPoints(points);
+            const lineMesh = new THREE.Line(geom, isIndex ? indexLineMaterial : normalLineMaterial);
+            lineMesh.renderOrder = 200;
+            contourGroup.add(lineMesh);
+
+            // Add Elevation Label badge on representative contour curves
+            if (poly.length > 8 && !labeledElevations.has(elevation)) {
+              labeledElevations.add(elevation);
+              const midIdx = Math.floor(points.length / 2);
+              const labelPos = points[midIdx].clone().add(new THREE.Vector3(0, 0.6, 0));
+
+              const sprite = makeElevationSprite(`${elevation} m`, maxDim);
+              sprite.position.copy(labelPos);
+              sprite.renderOrder = 300;
+              labelGroup.add(sprite);
+            }
+          });
+        })
+        .catch((err) => {
+          console.warn('Contour file issue:', err);
+          document.getElementById('btn-contours').style.display = 'none';
+          document.getElementById('btn-labels').style.display = 'none';
+        });
+    }
+
+    // 8. UI Button Listeners
+    const contourBtn = document.getElementById('btn-contours');
+    contourBtn.addEventListener('click', () => {
+      contourGroup.visible = !contourGroup.visible;
+      if (contourGroup.visible) {
+        contourBtn.classList.add('active');
+        contourBtn.innerText = '🗺️ Contours: ON';
+      } else {
+        contourBtn.classList.remove('active');
+        contourBtn.innerText = '🗺️ Contours: OFF';
+      }
+    });
+
+    const labelsBtn = document.getElementById('btn-labels');
+    labelsBtn.addEventListener('click', () => {
+      labelGroup.visible = !labelGroup.visible;
+      if (labelGroup.visible) {
+        labelsBtn.classList.add('active');
+        labelsBtn.innerText = '🏷️ Labels: ON';
+      } else {
+        labelsBtn.classList.remove('active');
+        labelsBtn.innerText = '🏷️ Labels: OFF';
+      }
+    });
+
+    const autoRotateBtn = document.getElementById('btn-autorotate');
+    autoRotateBtn.addEventListener('click', () => {
+      controls.autoRotate = !controls.autoRotate;
+      if (controls.autoRotate) {
+        autoRotateBtn.classList.add('active');
+        autoRotateBtn.innerText = '⟳ Auto-Rotate: ON';
+      } else {
+        autoRotateBtn.classList.remove('active');
+        autoRotateBtn.innerText = '⟳ Auto-Rotate: OFF';
+      }
+    });
+
+    document.getElementById('btn-reset').addEventListener('click', () => {
+      camera.position.copy(initialCameraState.pos);
+      controls.target.copy(initialCameraState.target);
+      controls.update();
+    });
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+  </script>
+</body>
+</html>
