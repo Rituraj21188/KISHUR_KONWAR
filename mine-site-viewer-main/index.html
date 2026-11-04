@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Mine Site Sentinel | Drone Analytics & 3D Point Cloud</title>
+  <title>Mine Site Sentinel | 2D WebGIS & 3D Point Cloud</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,7 +11,6 @@
   
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  
   <!-- FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
@@ -19,182 +18,202 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
-  <!-- Loaders.gl for In-Browser LAZ Decompression -->
+  <!-- Loaders.gl for in-browser LAZ parsing -->
   <script src="https://unpkg.com/@loaders.gl/core@3.4.4/dist/dist.min.js"></script>
   <script src="https://unpkg.com/@loaders.gl/las@3.4.4/dist/dist.min.js"></script>
 
   <style>
     :root {
-      --bg: #0a0e17;
-      --card-bg: #111827;
-      --panel-bg: rgba(17, 24, 39, 0.92);
-      --border: #1f2937;
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --panel-bg: rgba(22, 27, 34, 0.95);
+      --border: #30363d;
       --accent: #f59e0b;
-      --accent-glow: rgba(245, 158, 11, 0.15);
-      --cyan: #06b6d4;
-      --text: #f3f4f6;
-      --text-muted: #9ca3af;
+      --cyan: #33ccff;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
       --font: 'Inter', -apple-system, sans-serif;
       --mono: 'JetBrains Mono', monospace;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: var(--font); }
 
-    .viewport { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .viewport-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
     .hidden { display: none !important; }
 
-    /* Top Navigation HUD */
-    header {
-      position: absolute; top: 14px; left: 14px; right: 14px;
-      display: flex; justify-content: space-between; align-items: center;
-      z-index: 1000; pointer-events: none;
+    /* HUD Headers */
+    .app-title {
+      position: absolute; top: 14px; left: 14px; z-index: 500;
+      background: var(--panel-bg); border: 1px solid var(--border);
+      padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 600;
+      letter-spacing: 0.02em; backdrop-filter: blur(8px);
     }
-    .hud-box {
-      background: var(--panel-bg);
-      border: 1px solid var(--border);
-      backdrop-filter: blur(12px);
-      padding: 8px 14px;
-      border-radius: 10px;
-      pointer-events: auto;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-    }
-    .brand { font-size: 13px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px; font-family: var(--mono); }
-    .brand span { color: var(--accent); }
+    .app-title span { color: var(--text-muted); font-weight: 400; font-size: 11px; display: block; font-family: var(--mono); }
 
-    .tab-switcher { display: flex; gap: 4px; background: rgba(0,0,0,0.4); padding: 4px; border-radius: 8px; }
-    .tab-btn {
+    /* Mode Selector Bar */
+    .mode-bar {
+      position: absolute; top: 14px; left: 50%; transform: translateX(-50%); z-index: 500;
+      display: flex; gap: 4px; background: var(--panel-bg); border: 1px solid var(--border);
+      padding: 4px; border-radius: 10px; backdrop-filter: blur(8px);
+    }
+    .mode-btn {
       background: transparent; border: none; color: var(--text-muted);
-      padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;
+      padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600;
       cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;
     }
-    .tab-btn.active { background: var(--accent); color: #000; }
-    .tab-btn:hover:not(.active) { color: #fff; background: rgba(255,255,255,0.05); }
+    .mode-btn.active { background: var(--accent); color: #000; }
+    .mode-btn:hover:not(.active) { color: #fff; background: rgba(255,255,255,0.06); }
 
-    /* Control Drawers */
-    .control-panel {
-      position: absolute; bottom: 20px; left: 14px; z-index: 1000;
-      width: 250px; background: var(--panel-bg); border: 1px solid var(--border);
-      border-radius: 12px; padding: 14px; backdrop-filter: blur(12px);
-      font-size: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.6);
-    }
-    .control-panel h4 { font-size: 11px; font-family: var(--mono); color: var(--accent); text-transform: uppercase; margin-bottom: 10px; display: flex; items-center; justify-content: space-between; }
-    .control-row { margin-bottom: 10px; display: flex; flex-direction: column; gap: 4px; }
-    .control-row label { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 11px; }
-    input[type=range] { width: 100%; accent-color: var(--accent); cursor: pointer; }
-
-    /* Legend Box */
-    .legend-box {
-      position: absolute; bottom: 20px; right: 14px; z-index: 1000;
+    /* Fullscreen Toggle */
+    .fullscreen-btn {
+      position: absolute; top: 14px; right: 14px; z-index: 500;
       background: var(--panel-bg); border: 1px solid var(--border);
-      border-radius: 12px; padding: 12px 16px; backdrop-filter: blur(12px);
-      font-size: 11px; max-height: 220px; overflow-y: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      color: var(--text); padding: 8px 14px; border-radius: 8px; font-size: 12px; font-weight: 600;
+      cursor: pointer; display: flex; align-items: center; gap: 6px; backdrop-filter: blur(8px);
+      transition: all 0.2s ease;
     }
-    .legend-item { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
-    .swatch { width: 10px; height: 10px; border-radius: 2px; }
+    .fullscreen-btn:hover { background: #21262d; border-color: var(--accent); color: var(--accent); }
 
-    /* Loading Banner */
-    #loader-banner {
+    /* 2D Opacity Panel */
+    .opacity-panel {
+      position: absolute; bottom: 20px; left: 14px; z-index: 500;
+      background: var(--panel-bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 14px; backdrop-filter: blur(8px);
+      font-size: 12px; width: 190px;
+    }
+    .opacity-panel label { display: block; color: var(--text-muted); margin-bottom: 4px; font-family: var(--mono); font-size: 11px; }
+    .opacity-panel input[type=range] { width: 100%; accent-color: var(--accent); cursor: pointer; }
+
+    /* 3D Control Panel */
+    .pcd-panel {
+      position: absolute; bottom: 20px; left: 14px; z-index: 500;
+      background: var(--panel-bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px 16px; backdrop-filter: blur(8px);
+      font-size: 12px; width: 220px; display: flex; flex-direction: column; gap: 10px;
+    }
+    .pcd-panel label { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 11px; font-family: var(--mono); }
+
+    /* 2D Legend */
+    .legend {
+      position: absolute; bottom: 20px; right: 14px; z-index: 500;
+      background: var(--panel-bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px 14px; backdrop-filter: blur(8px);
+      font-size: 12px; max-height: 260px; overflow-y: auto;
+    }
+    .legend div { display: flex; align-items: center; gap: 8px; margin: 5px 0; color: var(--text); }
+    .legend .swatch { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
+    .legend .swatch.point { border-radius: 50%; border: 1px solid #000; }
+    .legend .swatch.line { height: 3px; }
+
+    .leaflet-control-layers {
+      background: var(--panel-bg) !important; border: 1px solid var(--border) !important;
+      color: var(--text) !important; border-radius: 8px !important; font-family: var(--font) !important;
+      backdrop-filter: blur(8px);
+    }
+    .leaflet-control-layers label { font-size: 12px; }
+
+    /* Loader Banner */
+    #loading-banner {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      z-index: 2000; background: var(--panel-bg); border: 1px solid var(--border);
+      z-index: 2000; background: var(--panel-bg); border: 1px solid var(--accent);
       padding: 16px 24px; border-radius: 12px; display: flex; align-items: center; gap: 12px;
-      font-family: var(--mono); font-size: 12px; color: var(--accent); box-shadow: 0 12px 36px rgba(0,0,0,0.8);
+      font-family: var(--mono); font-size: 13px; color: var(--accent); box-shadow: 0 12px 36px rgba(0,0,0,0.8);
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Bar -->
-  <header>
-    <div class="hud-box brand">
-      <span>▲</span> MINE SENTINEL <span>|</span> DGCA & IBM RULE 34A
-    </div>
-    <div class="hud-box">
-      <div class="tab-switcher">
-        <button id="btn-mode-2d" class="tab-btn active" onclick="switchMode('2d')">
-          <i class="fa-solid fa-map"></i> 2D WebGIS & Layers
-        </button>
-        <button id="btn-mode-3d" class="tab-btn" onclick="switchMode('3d')">
-          <i class="fa-solid fa-cubes-stacked"></i> 3D Mine LAZ Cloud
-        </button>
-      </div>
-    </div>
-  </header>
+  <!-- Top Title HUD -->
+  <div class="app-title">
+    Mines Site Map Viewer
+    <span>Orthomosaic · DSM · DTM · 3D Point Cloud</span>
+  </div>
+
+  <!-- Mode Switcher -->
+  <div class="mode-bar">
+    <button id="tab-btn-2d" class="mode-btn active" onclick="switchViewerMode('2d')">
+      <i class="fa-solid fa-map"></i> 2D WebGIS & Layers
+    </button>
+    <button id="tab-btn-3d" class="mode-btn" onclick="switchViewerMode('3d')">
+      <i class="fa-solid fa-cubes-stacked"></i> 3D Mine LAZ Cloud
+    </button>
+  </div>
+
+  <!-- Fullscreen Button -->
+  <button class="fullscreen-btn" onclick="toggleFullscreen()">
+    <i class="fa-solid fa-expand"></i> Fullscreen
+  </button>
 
   <!-- Loader Banner -->
-  <div id="loader-banner" class="hidden">
+  <div id="loading-banner" class="hidden">
     <i class="fa-solid fa-circle-notch fa-spin text-xl"></i>
-    <span id="loader-text">Initializing Engine...</span>
+    <span id="loading-status">Loading Model...</span>
   </div>
 
-  <!-- MODE 1: LEAFLET 2D WEBGIS (ORTHO + DSM + DTM + VECTOR) -->
-  <div id="map-engine" class="viewport"></div>
+  <!-- ================= VIEWPORT 1: LEAFLET 2D WEBGIS ================= -->
+  <div id="map" class="viewport-canvas"></div>
 
-  <!-- MODE 2: THREE.JS 3D POINT CLOUD (LAZ DECOMPRESSION) -->
-  <div id="three-engine" class="viewport hidden"></div>
-
-  <!-- 2D GIS Controls -->
-  <div id="panel-2d" class="control-panel">
-    <h4><span>Raster Blending</span> <i class="fa-solid fa-sliders"></i></h4>
-    <div class="control-row">
-      <label><span>Layer Opacity</span> <span id="label-2d-opacity">100%</span></label>
-      <input type="range" id="slider-2d-opacity" min="0" max="1" step="0.05" value="1">
-    </div>
-    <div style="font-size:10px; color:var(--text-muted); font-family:var(--mono); margin-top:8px;">
-      Use Top-Right layer control to toggle Orthomosaic, DSM, and DTM.
-    </div>
+  <!-- 2D Opacity Tool -->
+  <div class="opacity-panel" id="opacityPanel">
+    <label id="opacityLabel">Orthomosaic opacity</label>
+    <input type="range" id="opacitySlider" min="0" max="1" step="0.05" value="1">
   </div>
 
-  <!-- 3D Cloud Controls -->
-  <div id="panel-3d" class="control-panel hidden">
-    <h4><span>3D Point Controls</span> <i class="fa-solid fa-cube"></i></h4>
-    <div class="control-row">
-      <label><span>Color Mode</span></label>
-      <div style="display:flex; gap:4px; margin-top:4px;">
-        <button id="btn-col-elevation" class="tab-btn active" style="flex:1; justify-content:center;" onclick="setColorMode('elevation')">Elevation</button>
-        <button id="btn-col-rgb" class="tab-btn" style="flex:1; justify-content:center;" onclick="setColorMode('rgb')">True RGB</button>
-      </div>
+  <!-- 2D Legend matching original styles -->
+  <div class="legend" id="legendPanel">
+    <div><span class="swatch point" style="background:#ffd700;"></span> Boundary Pillar</div>
+    <div><span class="swatch line" style="background:#ff0000; border-top: 2px dashed #ff0000;"></span> Lease Boundary</div>
+    <div><span class="swatch line" style="background:#00ff00; border-top: 2px dashed #00ff00;"></span> Safety Zone (7.5m)</div>
+    <div><span class="swatch line" style="background:#33ccff;"></span> Road</div>
+    <div><span class="swatch" style="background:#a89078;"></span> Block A</div>
+    <div><span class="swatch" style="background:#d87093;"></span> Block B</div>
+    <div><span class="swatch" style="background:#3cb371;"></span> Infrastructure</div>
+  </div>
+
+  <!-- ================= VIEWPORT 2: THREE.JS 3D LAZ POINT CLOUD ================= -->
+  <div id="three-container" class="viewport-canvas hidden"></div>
+
+  <!-- 3D Controls Tool -->
+  <div class="pcd-panel hidden" id="pcdPanel">
+    <label><span>POINT SIZE</span> <span id="label-pt-size">2.0 px</span></label>
+    <input type="range" id="slider-pt-size" min="0.5" max="5.0" step="0.2" value="2.0">
+    <label><span>COLOR SCHEME</span></label>
+    <div style="display:flex; gap:6px;">
+      <button id="btn-col-elev" class="mode-btn active" style="flex:1; justify-content:center; border:1px solid var(--border);" onclick="setPcdColor('elevation')">Elevation</button>
+      <button id="btn-col-rgb" class="mode-btn" style="flex:1; justify-content:center; border:1px solid var(--border);" onclick="setPcdColor('rgb')">True RGB</button>
     </div>
-    <div class="control-row">
-      <label><span>Point Size</span> <span id="label-pt-size">2.0 px</span></label>
-      <input type="range" id="slider-pt-size" min="0.5" max="5.0" step="0.2" value="2.0">
-    </div>
-    <button class="tab-btn" style="width:100%; justify-content:center; margin-top:6px; border:1px solid var(--border);" onclick="reset3DCamera()">
+    <button class="mode-btn" style="width:100%; justify-content:center; border:1px solid var(--border); margin-top:4px;" onclick="reset3DCamera()">
       <i class="fa-solid fa-arrows-rotate"></i> Reset Camera
     </button>
   </div>
 
-  <!-- 2D Legend -->
-  <div id="legend-2d" class="legend-box">
-    <div class="legend-item"><span class="swatch" style="background:#ffd700; border-radius:50%;"></span> Boundary Pillar</div>
-    <div class="legend-item"><span class="swatch" style="background:#ff0000;"></span> Lease Boundary</div>
-    <div class="legend-item"><span class="swatch" style="background:#00ff00;"></span> 7.5m Safety Zone</div>
-    <div class="legend-item"><span class="swatch" style="background:#33ccff;"></span> Haul Road</div>
-    <div class="legend-item"><span class="swatch" style="background:#d87093;"></span> Active Bench</div>
-  </div>
-
-  <!-- Scripts -->
+  <!-- Script Modules -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
-    let currentMode = '2d';
+    let activeMode = '2d';
     const SITE_CENTER = [25.192475, 91.619639];
+    const SITE_ZOOM = 17;
     const SITE_BOUNDS = L.latLngBounds([25.1830, 91.6090], [25.2020, 91.6300]);
 
-    // ==========================================
-    // 1. ENGINE 1: 2D Leaflet WebGIS Setup
-    // ==========================================
-    const map = L.map('map-engine', {
+    // 1. LEAFLET ENGINE (PRESERVED ORIGINAL COLOR LOGIC)
+    const map = L.map('map', {
       zoomControl: true,
-      minZoom: 15,
+      minZoom: 16,
       maxZoom: 22,
       maxBounds: SITE_BOUNDS,
+      maxBoundsViscosity: 1.0,
       scrollWheelZoom: true
-    }).setView(SITE_CENTER, 17);
+    }).setView(SITE_CENTER, SITE_ZOOM);
 
-    const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 22 }).addTo(map);
+    const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors',
+      maxZoom: 22
+    }).addTo(map);
 
     map.createPane('droneRasterPane');
-    map.getPane('droneRasterPane').style.zIndex = 400;
+    const droneRasterPane = map.getPane('droneRasterPane');
+    droneRasterPane.style.zIndex = 400;
 
     const orthoLayer = L.tileLayer('./Tiles.tif/{z}/{x}/{y}.png', {
       maxZoom: 22, maxNativeZoom: 20, tms: true, bounds: SITE_BOUNDS, pane: 'droneRasterPane'
@@ -211,52 +230,78 @@
     map.createPane('vectorPane');
     map.getPane('vectorPane').style.zIndex = 650;
 
+    // Preserved exact original color rules
     const structuresLayer = L.geoJSON(null, {
       pane: 'vectorPane',
-      style: (feature) => {
-        const name = String(feature.properties?.layer || feature.properties?.name || "").toUpperCase();
-        if (name.includes("LEASE")) return { color: "#ff0000", weight: 3, dashArray: "6,6" };
-        if (name.includes("SAFETY")) return { color: "#00ff00", weight: 2.5, dashArray: "4,4" };
-        if (name.includes("ROAD")) return { color: "#33ccff", weight: 4 };
-        return { color: "#ffd700", weight: 2, fillOpacity: 0.4 };
+      style: function(feature) {
+        const props = feature.properties || {};
+        const name = String(props.layer || props.Layer || props.name || props.Name || props.LAYER || "").toUpperCase();
+
+        if (name.includes("LEASE_BOUNDARY") || name.includes("LEASE")) {
+          return { pane: 'vectorPane', color: "#ff0000", weight: 3, dashArray: "6, 6", fillOpacity: 0 };
+        }
+        if (name.includes("SAFETY_ZONE") || name.includes("7_5_M") || name.includes("SAFETY")) {
+          return { pane: 'vectorPane', color: "#00ff00", weight: 2.5, dashArray: "4, 4", fillOpacity: 0 };
+        }
+        if (name.includes("ROAD")) {
+          return { pane: 'vectorPane', color: "#33ccff", weight: 4, opacity: 0.95 };
+        }
+        if (name.includes("BLOCK - A") || name.includes("BLOCK_A") || name.includes("BLOCK A")) {
+          return { pane: 'vectorPane', color: "#8b7355", fillColor: "#a89078", weight: 1.5, fillOpacity: 0.5 };
+        }
+        if (name.includes("BLOCK - B") || name.includes("BLOCK_B") || name.includes("BLOCK B")) {
+          return { pane: 'vectorPane', color: "#c71585", fillColor: "#d87093", weight: 1.5, fillOpacity: 0.55 };
+        }
+        if (name.includes("INFRASTRUCTURE")) {
+          return { pane: 'vectorPane', color: "#2e8b57", fillColor: "#3cb371", weight: 1.5, fillOpacity: 0.7 };
+        }
+        return { pane: 'vectorPane', color: "#ffff00", weight: 2, fillOpacity: 0.3 };
       },
-      pointToLayer: (feature, latlng) => L.circleMarker(latlng, { radius: 6, fillColor: "#ffd700", color: "#000", weight: 2, fillOpacity: 1 })
+
+      pointToLayer: function(feature, latlng) {
+        return L.circleMarker(latlng, {
+          pane: 'vectorPane', radius: 7, fillColor: "#ffd700", color: "#000000", weight: 2, fillOpacity: 1
+        });
+      },
+
+      onEachFeature: function(feature, layer) {
+        const props = feature.properties || {};
+        const title = props.layer || props.Layer || props.name || props.Name || "Site Feature";
+        layer.bindPopup(`<b>${title}</b>`);
+      }
     }).addTo(map);
 
     fetch('./data/structures-structures.geojson')
       .then(res => res.json())
       .then(data => structuresLayer.addData(data))
-      .catch(e => console.warn("Vector layer note:", e));
+      .catch(err => console.warn("Vector layer note:", err));
 
     L.control.layers({ "OpenStreetMap": osm }, {
       "Orthomosaic": orthoLayer,
-      "DSM (Digital Surface)": dsmLayer,
-      "DTM (Bare Earth)": dtmLayer,
-      "Structures": structuresLayer
+      "DSM (surface model)": dsmLayer,
+      "DTM (terrain model)": dtmLayer,
+      "Structures & Boundaries": structuresLayer
     }, { collapsed: false }).addTo(map);
 
-    document.getElementById('slider-2d-opacity').addEventListener('input', (e) => {
-      const v = parseFloat(e.target.value);
-      orthoLayer.setOpacity(v);
-      dsmLayer.setOpacity(v);
-      dtmLayer.setOpacity(v);
-      document.getElementById('label-2d-opacity').innerText = Math.round(v * 100) + '%';
-    });
+    const opacitySlider = document.getElementById('opacitySlider');
+    opacitySlider.oninput = () => {
+      orthoLayer.setOpacity(parseFloat(opacitySlider.value));
+      dsmLayer.setOpacity(parseFloat(opacitySlider.value));
+      dtmLayer.setOpacity(parseFloat(opacitySlider.value));
+    };
 
-    // ==========================================
-    // 2. ENGINE 2: Three.js 3D LAZ Point Cloud
-    // ==========================================
+    // 2. THREE.JS 3D POINT CLOUD (STREAMING mine-site-viewer.laz)
     let threeScene, threeCamera, threeRenderer, threeControls, pcdMesh;
     let pcdColorsRGB, pcdColorsElevation, sceneRadius = 150;
     let isLazLoaded = false;
 
     function initThreeEngine() {
-      const container = document.getElementById('three-engine');
+      const container = document.getElementById('three-container');
       threeScene = new THREE.Scene();
-      threeScene.background = new THREE.Color(0x0a0e17);
+      threeScene.background = new THREE.Color(0x0d1117);
 
       threeCamera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 50000);
-      threeCamera.position.set(0, 150, 250);
+      threeCamera.position.set(0, 140, 240);
 
       threeRenderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
       threeRenderer.setSize(window.innerWidth, window.innerHeight);
@@ -267,14 +312,13 @@
       threeControls.enableDamping = true;
       threeControls.dampingFactor = 0.05;
 
-      threeScene.add(new THREE.AmbientLight(0xffffff, 1.2));
-
+      threeScene.add(new THREE.AmbientLight(0xffffff, 1.4));
       const grid = new THREE.GridHelper(300, 30, 0xf59e0b, 0x1f2937);
       grid.position.y = -2;
       threeScene.add(grid);
 
       window.addEventListener('resize', () => {
-        if (currentMode === '3d') {
+        if (activeMode === '3d') {
           threeCamera.aspect = window.innerWidth / window.innerHeight;
           threeCamera.updateProjectionMatrix();
           threeRenderer.setSize(window.innerWidth, window.innerHeight);
@@ -283,7 +327,7 @@
 
       function animate() {
         requestAnimationFrame(animate);
-        if (currentMode === '3d') {
+        if (activeMode === '3d') {
           threeControls.update();
           threeRenderer.render(threeScene, threeCamera);
         }
@@ -291,19 +335,19 @@
       animate();
     }
 
-    async function loadMineLaz() {
+    async function loadMinePointcloud() {
       if (isLazLoaded) return;
-      const loader = document.getElementById('loader-banner');
-      const loaderText = document.getElementById('loader-text');
-      loader.classList.remove('hidden');
-      loaderText.innerText = "Downloading mine-site-viewer.laz...";
+      const banner = document.getElementById('loading-banner');
+      const statusText = document.getElementById('loading-status');
+      banner.classList.remove('hidden');
+      statusText.innerText = "Downloading mine-site-viewer.laz...";
 
       try {
         const response = await fetch('./mine-site-viewer.laz');
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const buffer = await response.arrayBuffer();
 
-        loaderText.innerText = "Decompressing LAZ Cloud...";
+        statusText.innerText = "Decompressing LAZ Cloud...";
         const data = await loaders.load(buffer, loaders.LASLoader);
 
         const pos = data.attributes.POSITION.value;
@@ -330,10 +374,9 @@
         const rgb = new Float32Array(count * 3);
         const elev = new Float32Array(count * 3);
         const rangeZ = (maxZ - minZ) || 1.0;
-
         const colorAttr = data.attributes.COLOR_0 ? data.attributes.COLOR_0.value : null;
-        let dst = 0;
 
+        let dst = 0;
         for (let i = 0; i < total; i += step) {
           const rx = pos[i * 3], ry = pos[i * 3 + 1], rz = pos[i * 3 + 2];
           centered[dst * 3]     = rx - midX;
@@ -348,38 +391,33 @@
             rgb[dst * 3] = 0.9; rgb[dst * 3 + 1] = 0.6; rgb[dst * 3 + 2] = 0.2;
           }
 
-          // Elevation heat coloring
           const nz = (rz - minZ) / rangeZ;
           elev[dst * 3]     = Math.min(1.0, nz * 1.6);
           elev[dst * 3 + 1] = Math.max(0.1, 1.0 - Math.abs(nz - 0.5) * 2);
           elev[dst * 3 + 2] = Math.max(0.0, 1.0 - nz * 1.6);
-
           dst++;
         }
 
         pcdColorsRGB = rgb;
         pcdColorsElevation = elev;
 
-        const geometry = new THREE.BufferGeometry();
-        geometry.setAttribute('position', new THREE.BufferAttribute(centered, 3));
-        geometry.setAttribute('color', new THREE.BufferAttribute(elev, 3));
+        const geom = new THREE.BufferGeometry();
+        geom.setAttribute('position', new THREE.BufferAttribute(centered, 3));
+        geom.setAttribute('color', new THREE.BufferAttribute(elev, 3));
 
-        const material = new THREE.PointsMaterial({
-          size: 2.0, vertexColors: true, sizeAttenuation: true
-        });
-
-        pcdMesh = new THREE.Points(geometry, material);
+        const mat = new THREE.PointsMaterial({ size: 2.0, vertexColors: true, sizeAttenuation: true });
+        pcdMesh = new THREE.Points(geom, mat);
         threeScene.add(pcdMesh);
 
         sceneRadius = Math.max(maxX - minX, maxY - minY, maxZ - minZ) * 0.7;
         reset3DCamera();
 
         isLazLoaded = true;
-        loader.classList.add('hidden');
+        banner.classList.add('hidden');
       } catch (err) {
         console.error(err);
-        loaderText.innerText = "Error parsing LAZ file.";
-        setTimeout(() => loader.classList.add('hidden'), 3500);
+        statusText.innerText = "Error parsing LAZ point cloud.";
+        setTimeout(() => banner.classList.add('hidden'), 3500);
       }
     }
 
@@ -391,9 +429,9 @@
       threeControls.update();
     }
 
-    function setColorMode(mode) {
+    function setPcdColor(mode) {
       if (!pcdMesh) return;
-      document.getElementById('btn-col-elevation').classList.toggle('active', mode === 'elevation');
+      document.getElementById('btn-col-elev').classList.toggle('active', mode === 'elevation');
       document.getElementById('btn-col-rgb').classList.toggle('active', mode === 'rgb');
 
       const col = (mode === 'rgb' && pcdColorsRGB) ? pcdColorsRGB : pcdColorsElevation;
@@ -407,36 +445,42 @@
       if (pcdMesh) pcdMesh.material.size = v;
     });
 
-    // ==========================================
-    // 3. Mode Switcher (2D vs 3D)
-    // ==========================================
-    function switchMode(mode) {
-      currentMode = mode;
-      document.getElementById('btn-mode-2d').classList.toggle('active', mode === '2d');
-      document.getElementById('btn-mode-3d').classList.toggle('active', mode === '3d');
+    // 3. MODE SWITCHING
+    function switchViewerMode(mode) {
+      activeMode = mode;
+      document.getElementById('tab-btn-2d').classList.toggle('active', mode === '2d');
+      document.getElementById('tab-btn-3d').classList.toggle('active', mode === '3d');
 
-      const mapEl = document.getElementById('map-engine');
-      const threeEl = document.getElementById('three-engine');
-      const p2d = document.getElementById('panel-2d');
-      const p3d = document.getElementById('panel-3d');
-      const l2d = document.getElementById('legend-2d');
+      const mapEl = document.getElementById('map');
+      const threeEl = document.getElementById('three-container');
+      const op = document.getElementById('opacityPanel');
+      const leg = document.getElementById('legendPanel');
+      const pcdPan = document.getElementById('pcdPanel');
 
       if (mode === '2d') {
         mapEl.classList.remove('hidden');
         threeEl.classList.add('hidden');
-        p2d.classList.remove('hidden');
-        p3d.classList.add('hidden');
-        l2d.classList.remove('hidden');
+        op.classList.remove('hidden');
+        leg.classList.remove('hidden');
+        pcdPan.classList.add('hidden');
         map.invalidateSize();
       } else {
         mapEl.classList.add('hidden');
         threeEl.classList.remove('hidden');
-        p2d.classList.add('hidden');
-        p3d.classList.remove('hidden');
-        l2d.classList.add('hidden');
+        op.classList.add('hidden');
+        leg.classList.add('hidden');
+        pcdPan.classList.remove('hidden');
 
         if (!threeRenderer) initThreeEngine();
-        loadMineLaz();
+        loadMinePointcloud();
+      }
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen?.();
+      } else {
+        document.exitFullscreen?.();
       }
     }
   </script>
