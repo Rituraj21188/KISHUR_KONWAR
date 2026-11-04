@@ -5,7 +5,7 @@
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
   <title>KISHUR KONWAR &amp; ASSOCIATES | Technical Survey, Hydrodynamics &amp; Civil Infrastructure Consulting</title>
 
-  <!-- Google Fonts: Plus Jakarta Sans, Inter, JetBrains Mono -->
+  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com" rel="preconnect"/>
   <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
@@ -52,7 +52,6 @@
   </script>
 
   <style>
-    /* Technical Grid Substrate */
     .bg-grid-tech {
       background-size: 32px 32px;
       background-image: 
@@ -80,7 +79,6 @@
       0%, 100% { opacity: 1; transform: scale(1); }
       50% { opacity: .4; transform: scale(1.25); }
     }
-    /* Leaflet Canvas Overrides */
     .leaflet-popup-content-wrapper {
       background: rgba(15, 23, 42, 0.94);
       color: #f8fafc;
@@ -98,7 +96,6 @@
   <!-- ================= TOP APP BAR ================= -->
   <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-border-subtle shadow-sm">
     <div class="max-w-7xl mx-auto px-6 py-3.5 flex items-center justify-between">
-      <!-- Brand Logo Anchor -->
       <a class="font-display font-bold text-base md:text-lg text-on-surface tracking-tight uppercase flex items-center gap-2.5" href="#">
         <span class="relative flex h-3 w-3">
           <span class="pulse-dot absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
@@ -107,16 +104,17 @@
         <span>KISHUR KONWAR &amp; ASSOCIATES</span>
       </a>
 
-      <!-- Navigation Links -->
       <nav class="hidden md:flex items-center space-x-7 text-xs font-mono font-semibold uppercase tracking-wider text-text-secondary">
-        <a class="text-primary hover:text-blue-700 transition-colors" href="#completed-contracts">Completed Contracts</a>
-        <a class="hover:text-primary transition-colors" href="#survey-fleet">Survey Fleet</a>
-        <a class="hover:text-primary transition-colors" href="#operational-reach">Operational Reach</a>
-        <a class="hover:text-primary transition-colors" href="#threejs-viewport">3D Hydro-LiDAR</a>
+        <a class="text-cyan-600 font-bold hover:text-cyan-700 transition-colors" href="#live-demos">
+          <i class="fa-solid fa-cube text-cyan-500 mr-1"></i> Data Demos
+        </a>
+        <a class="hover:text-primary transition-colors" href="#services-matrix">Services</a>
+        <a class="hover:text-primary transition-colors" href="#completed-contracts">Contracts</a>
+        <a class="hover:text-primary transition-colors" href="#survey-fleet">Fleet</a>
+        <a class="hover:text-primary transition-colors" href="#operational-reach">Reach</a>
         <a class="hover:text-primary transition-colors" href="#contact">Contact</a>
       </nav>
 
-      <!-- Contact Phone Link -->
       <div class="flex items-center gap-3">
         <a class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-border-strong hover:border-primary text-xs font-semibold text-on-surface hover:text-primary transition-all active:scale-95 bg-white shadow-sm" href="tel:+919957187257">
           <i class="fa-solid fa-phone text-primary"></i>
@@ -130,13 +128,11 @@
   <section class="relative pt-12 pb-16 lg:pt-16 lg:pb-24 overflow-hidden bg-grid-tech">
     <div class="max-w-7xl mx-auto px-6">
       
-      <!-- Eyebrow Pill -->
       <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-mono font-semibold tracking-wider uppercase mb-4">
         <i class="fa-solid fa-compass-drafting"></i>
         <span>Engineering &amp; Geospatial Solutions</span>
       </div>
 
-      <!-- Main Headline -->
       <div class="max-w-4xl mb-6">
         <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold text-on-surface tracking-tight mb-4 leading-tight">
           Technical Survey, Hydrodynamics &amp; <span class="text-blue-600">Civil Infrastructure</span> Consulting
@@ -146,15 +142,14 @@
         </p>
       </div>
 
-      <!-- Quick Action Buttons -->
       <div class="flex flex-wrap items-center gap-3.5 mb-10">
-        <a class="inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-all active:scale-95 shadow-sm" href="#completed-contracts">
-          <span>Explore Institutional Contracts</span>
-          <i class="fa-solid fa-arrow-right text-xs"></i>
+        <a class="inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-cyan-600 hover:bg-cyan-700 text-white text-sm font-semibold transition-all active:scale-95 shadow-sm" href="#live-demos">
+          <i class="fa-solid fa-cubes text-xs"></i>
+          <span>Explore Interactive Demos</span>
         </a>
-        <a class="inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-white hover:bg-surface-slate-subtle border border-border-strong text-on-surface text-sm font-semibold transition-all active:scale-95" href="#contact">
-          <i class="fa-solid fa-file-invoice text-text-secondary text-sm"></i>
-          <span>Request Technical DPR Scope</span>
+        <a class="inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-all active:scale-95 shadow-sm" href="#completed-contracts">
+          <span>Institutional Contracts</span>
+          <i class="fa-solid fa-arrow-right text-xs"></i>
         </a>
         <div class="hidden lg:flex items-center gap-2 ml-4 px-3.5 py-2 rounded-md bg-white border border-border-subtle text-xs text-text-secondary font-mono shadow-sm">
           <i class="fa-solid fa-satellite text-emerald-600"></i>
@@ -162,9 +157,8 @@
         </div>
       </div>
 
-      <!-- ================= VIDEO HERO STAGE ================= -->
+      <!-- VIDEO MONITOR -->
       <div class="rounded-xl overflow-hidden border border-border-subtle shadow-lg bg-navy-dark text-white relative mb-12">
-        <!-- Monitor Header Bar -->
         <div class="flex flex-wrap items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-800 text-xs font-mono">
           <div class="flex items-center gap-2.5">
             <i class="fa-solid fa-plane-departure text-blue-400"></i>
@@ -186,7 +180,6 @@
           </div>
         </div>
 
-        <!-- Video Player with Responsive HUD Overlay -->
         <div class="relative w-full h-72 sm:h-96 md:h-[480px] bg-black overflow-hidden flex items-center justify-center">
           <video 
             id="hero-video"
@@ -201,11 +194,9 @@
             Your browser does not support HTML5 video playback.
           </video>
           
-          <!-- Subtle Cartesian Grid and Scanline HUD -->
           <div class="absolute inset-0 bg-grid-dark opacity-35 pointer-events-none"></div>
           <div class="hud-scanner absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 to-transparent pointer-events-none"></div>
 
-          <!-- Top-Left Telemetry Box -->
           <div class="absolute top-4 left-4 font-mono text-[11px] text-cyan-300 space-y-1 bg-slate-900/85 backdrop-blur-md p-3 rounded border border-cyan-500/30 pointer-events-none shadow-lg">
             <div>CAM: SONY ILX-LR1 61MP 45mm</div>
             <div>ALT: 124.8m AGL | GSD: 1.84 cm/px</div>
@@ -213,7 +204,6 @@
             <div>SPEED: 11.4 m/s | OVERLAP: 80/75%</div>
           </div>
 
-          <!-- Bottom-Right Telemetry Box -->
           <div class="absolute bottom-4 right-4 font-mono text-[11px] text-slate-300 bg-slate-900/85 backdrop-blur-md p-3 rounded border border-slate-700 space-y-0.5 text-right pointer-events-none shadow-lg">
             <div class="text-emerald-400 font-semibold">POINT CLOUD RATE: 240,000 pts/s</div>
             <div>EPSG: 32646 (UTM Zone 46N - WGS84)</div>
@@ -222,7 +212,301 @@
         </div>
       </div>
 
-      <!-- 4 Core Capabilities Grid -->
+    </div>
+  </section>
+
+  <!-- ================= INTERACTIVE DRONE DATA LAB & DEMOS (NEW DK DRONES STYLE) ================= -->
+  <section class="py-20 bg-slate-950 text-white border-t border-slate-800" id="live-demos">
+    <div class="max-w-7xl mx-auto px-6">
+      
+      <!-- Section Header -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
+        <div>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/70 border border-cyan-800/80 text-cyan-400 text-xs font-mono font-semibold tracking-wider uppercase mb-3">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+            <span>Live Geospatial Data Laboratory</span>
+          </div>
+          <h2 class="font-display text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+            Interactive Drone &amp; Hydro Data Demos
+          </h2>
+          <p class="text-slate-400 text-sm sm:text-base max-w-2xl mt-2 leading-relaxed">
+            Real datasets captured across regional infrastructure sites. Inspect raw point clouds, reality meshes, vector contours, and volumetric models directly in-browser.
+          </p>
+        </div>
+
+        <!-- Filter Tab Buttons -->
+        <div class="flex flex-wrap gap-2 text-xs font-mono" id="demo-tab-btns">
+          <button class="demo-tab active px-4 py-2 rounded-lg bg-cyan-600 text-white font-semibold transition" onclick="switchDemoTab('all', this)">All Datasets</button>
+          <button class="demo-tab px-4 py-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition" onclick="switchDemoTab('civil', this)">3D Reality Mesh</button>
+          <button class="demo-tab px-4 py-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition" onclick="switchDemoTab('heritage', this)">Point Cloud (.PLY)</button>
+          <button class="demo-tab px-4 py-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition" onclick="switchDemoTab('urban', this)">PMTiles &amp; LAZ</button>
+          <button class="demo-tab px-4 py-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition" onclick="switchDemoTab('mining', this)">Mine Volumetrics</button>
+        </div>
+      </div>
+
+      <!-- Demo Cards Grid with Technical Thumbnails -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12" id="demo-cards-grid">
+        
+        <!-- CARD 1: 3D Under Construction -->
+        <div class="demo-card group bg-slate-900/80 border border-slate-800 hover:border-cyan-500/60 rounded-xl overflow-hidden transition-all flex flex-col justify-between" data-category="civil">
+          <div>
+            <!-- Technical Graphic Thumbnail -->
+            <div class="relative h-44 bg-gradient-to-br from-slate-900 via-slate-800 to-cyan-950 p-4 flex flex-col justify-between overflow-hidden border-b border-slate-800">
+              <div class="absolute inset-0 bg-grid-dark opacity-30"></div>
+              <div class="flex items-center justify-between z-10">
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-950/80 text-cyan-400 border border-cyan-800">GLB 3D MESH</span>
+                <span class="text-[10px] font-mono text-slate-400">EPSG: 32646</span>
+              </div>
+              <div class="z-10 text-center my-auto">
+                <i class="fa-solid fa-cubes-stacked text-3xl text-cyan-400 group-hover:scale-110 transition-transform"></i>
+              </div>
+              <div class="flex items-center justify-between z-10 text-[10px] font-mono text-slate-400">
+                <span>3DModel-v1.glb</span>
+                <span class="text-emerald-400">contours.geojson</span>
+              </div>
+            </div>
+            <!-- Card Body -->
+            <div class="p-5">
+              <h3 class="font-display text-base font-bold text-white group-hover:text-cyan-300 transition-colors">3D Civil Site &amp; Contours</h3>
+              <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                As-built photogrammetric surface model aligned with vector contour lines for earthwork grading and engineering verification.
+              </p>
+              <div class="flex flex-wrap gap-1 mt-3">
+                <span class="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">3DModel-v1.glb</span>
+                <span class="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">0.5m Contours</span>
+              </div>
+            </div>
+          </div>
+          <div class="p-5 pt-0">
+            <button onclick="launchInteractiveViewer('glb', '3D_UnderConstruction_Model/3DModel-v1.glb', '3D Civil Infrastructure Model')" class="w-full py-2 px-3 rounded-lg bg-cyan-600/20 hover:bg-cyan-600 text-cyan-300 hover:text-white border border-cyan-500/40 text-xs font-mono font-semibold transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-cube"></i>
+              <span>Launch 3D Model</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- CARD 2: Architecture Church Structure -->
+        <div class="demo-card group bg-slate-900/80 border border-slate-800 hover:border-cyan-500/60 rounded-xl overflow-hidden transition-all flex flex-col justify-between" data-category="heritage">
+          <div>
+            <!-- Technical Graphic Thumbnail -->
+            <div class="relative h-44 bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 p-4 flex flex-col justify-between overflow-hidden border-b border-slate-800">
+              <div class="absolute inset-0 bg-grid-dark opacity-30"></div>
+              <div class="flex items-center justify-between z-10">
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-950/80 text-indigo-400 border border-indigo-800">POINT CLOUD</span>
+                <span class="text-[10px] font-mono text-slate-400">DENSE .PLY</span>
+              </div>
+              <div class="z-10 text-center my-auto">
+                <i class="fa-solid fa-monument text-3xl text-indigo-400 group-hover:scale-110 transition-transform"></i>
+              </div>
+              <div class="flex items-center justify-between z-10 text-[10px] font-mono text-slate-400">
+                <span>Church_Structure.ply</span>
+                <span class="text-indigo-400">RGB Classified</span>
+              </div>
+            </div>
+            <!-- Card Body -->
+            <div class="p-5">
+              <h3 class="font-display text-base font-bold text-white group-hover:text-indigo-300 transition-colors">Architectural Point Cloud</h3>
+              <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                Millimeter-grade photogrammetric point cloud of heritage masonry structure for structural integrity and façade conservation.
+              </p>
+              <div class="flex flex-wrap gap-1 mt-3">
+                <span class="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">High Density</span>
+                <span class="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">Colorized PLY</span>
+              </div>
+            </div>
+          </div>
+          <div class="p-5 pt-0">
+            <button onclick="launchInteractiveViewer('ply', 'Architecture/Church_Structure.ply', 'Architectural Masonry Cloud')" class="w-full py-2 px-3 rounded-lg bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/40 text-xs font-mono font-semibold transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-braille"></i>
+              <span>Stream Point Cloud</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- CARD 3: Urban Plan PMTiles & LAZ -->
+        <div class="demo-card group bg-slate-900/80 border border-slate-800 hover:border-cyan-500/60 rounded-xl overflow-hidden transition-all flex flex-col justify-between" data-category="urban">
+          <div>
+            <!-- Technical Graphic Thumbnail -->
+            <div class="relative h-44 bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 p-4 flex flex-col justify-between overflow-hidden border-b border-slate-800">
+              <div class="absolute inset-0 bg-grid-dark opacity-30"></div>
+              <div class="flex items-center justify-between z-10">
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-400 border border-emerald-800">PMTILES / LAZ</span>
+                <span class="text-[10px] font-mono text-slate-400">GSD: 2.1cm</span>
+              </div>
+              <div class="z-10 text-center my-auto">
+                <i class="fa-solid fa-map-location-dot text-3xl text-emerald-400 group-hover:scale-110 transition-transform"></i>
+              </div>
+              <div class="flex items-center justify-between z-10 text-[10px] font-mono text-slate-400">
+                <span>Urban_City_Ortho</span>
+                <span class="text-emerald-400">Cloud-Optimized</span>
+              </div>
+            </div>
+            <!-- Card Body -->
+            <div class="p-5">
+              <h3 class="font-display text-base font-bold text-white group-hover:text-emerald-300 transition-colors">Urban Cadastre &amp; LiDAR</h3>
+              <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                Fast web-streamed city orthomosaics paired with compressed airborne LiDAR point clouds for municipality GIS master planning.
+              </p>
+              <div class="flex flex-wrap gap-1 mt-3">
+                <span class="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">PMTiles Ortho</span>
+                <span class="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">Compressed LAZ</span>
+              </div>
+            </div>
+          </div>
+          <div class="p-5 pt-0">
+            <a href="Urban_Plan/Urban_City_Ortho.pmtiles" download class="w-full py-2 px-3 rounded-lg bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/40 text-xs font-mono font-semibold transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-download"></i>
+              <span>Inspect GIS PMTiles</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- CARD 4: Mine Site Volumetrics -->
+        <div class="demo-card group bg-slate-900/80 border border-slate-800 hover:border-cyan-500/60 rounded-xl overflow-hidden transition-all flex flex-col justify-between" data-category="mining">
+          <div>
+            <!-- Technical Graphic Thumbnail -->
+            <div class="relative h-44 bg-gradient-to-br from-slate-900 via-slate-800 to-amber-950 p-4 flex flex-col justify-between overflow-hidden border-b border-slate-800">
+              <div class="absolute inset-0 bg-grid-dark opacity-30"></div>
+              <div class="flex items-center justify-between z-10">
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-950/80 text-amber-400 border border-amber-800">DSM / DTM / VOL</span>
+                <span class="text-[10px] font-mono text-slate-400">ERROR &lt; 1%</span>
+              </div>
+              <div class="z-10 text-center my-auto">
+                <i class="fa-solid fa-mountain text-3xl text-amber-400 group-hover:scale-110 transition-transform"></i>
+              </div>
+              <div class="flex items-center justify-between z-10 text-[10px] font-mono text-slate-400">
+                <span>mine-site-viewer</span>
+                <span class="text-amber-400">Cut &amp; Fill</span>
+              </div>
+            </div>
+            <!-- Card Body -->
+            <div class="p-5">
+              <h3 class="font-display text-base font-bold text-white group-hover:text-amber-300 transition-colors">Mine Site &amp; Stockpile Audit</h3>
+              <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                GeoTIFF DSM/DTM surface extraction and open-cast volumetric audit data for stockpile verification and bench slope monitoring.
+              </p>
+              <div class="flex flex-wrap gap-1 mt-3">
+                <span class="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">Tiles_DSM.tif</span>
+                <span class="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">Tiles_DTM.tif</span>
+              </div>
+            </div>
+          </div>
+          <div class="p-5 pt-0">
+            <a href="mine-site-viewer-main/index.html" class="w-full py-2 px-3 rounded-lg bg-amber-600/20 hover:bg-amber-600 text-amber-300 hover:text-white border border-amber-500/40 text-xs font-mono font-semibold transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-up-right-from-square"></i>
+              <span>Open Mine App Viewer</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Turnkey Deliverables Strip -->
+      <div class="p-6 rounded-xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-cyan-950 border border-cyan-800 text-cyan-400 flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-database text-lg"></i>
+          </div>
+          <div>
+            <h4 class="text-sm font-bold text-white">Full-Resolution Raw Data Available On Request</h4>
+            <p class="text-xs text-slate-400">Enterprise clients can request access to unprocessed geodetic RINEX, calibrated raw LAS, and full-resolution GeoTIFF orthos.</p>
+          </div>
+        </div>
+        <a href="#contact" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-mono font-semibold transition whitespace-nowrap">
+          Request Raw Datasets →
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= 3D WEBGL INTERACTIVE CANVAS MODAL ================= -->
+  <div id="model-modal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden shadow-2xl relative">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950">
+        <div class="flex items-center gap-3 font-mono text-xs">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-white font-bold" id="modal-title">Dataset Inspection Viewer</span>
+          <span class="text-slate-500">|</span>
+          <span class="text-cyan-400" id="modal-path"></span>
+        </div>
+        <button onclick="closeInteractiveViewer()" class="text-slate-400 hover:text-white text-lg px-2">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- 3D Canvas Viewport -->
+      <div class="relative flex-1 bg-slate-950" id="modal-canvas-container">
+        <!-- Interactive Loader Overlay -->
+        <div id="canvas-loader" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/80 z-10">
+          <i class="fa-solid fa-circle-notch fa-spin text-3xl text-cyan-400 mb-3"></i>
+          <span class="text-xs font-mono text-slate-300">Streaming Survey Dataset...</span>
+        </div>
+
+        <!-- Telemetry Floating Box -->
+        <div class="absolute bottom-4 left-4 z-10 bg-slate-900/90 border border-slate-800 p-3 rounded-lg font-mono text-[11px] text-slate-300 space-y-1 backdrop-blur-md">
+          <div class="text-cyan-400 font-bold">CONTROLS:</div>
+          <div>Left Click + Drag : Rotate Orbit</div>
+          <div>Right Click + Drag : Pan Camera</div>
+          <div>Scroll : Zoom In / Out</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= THREE.JS INTERACTIVE 3D HYDRO-LIDAR VIEWPORT ================= -->
+  <section class="py-16 bg-navy-dark text-white border-t border-slate-800" id="threejs-viewport">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+        <div>
+          <span class="text-xs font-mono font-semibold text-cyan-400 tracking-wider uppercase">SIMULATION ENVIRONMENT</span>
+          <h2 class="font-display text-2xl sm:text-3xl font-bold text-white mt-1">Interactive 3D Hydrodynamic &amp; LiDAR Bed Surface</h2>
+          <p class="text-xs sm:text-sm text-slate-400 mt-1">Real-time WebGL canvas simulating Brahmaputra bathymetric contours, flow soundings, and survey boat transects.</p>
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+          <button id="btn-cam-orbit" class="px-3.5 py-1.5 rounded-md bg-cyan-600 text-white text-xs font-mono font-semibold hover:bg-cyan-500 transition-colors">
+            <i class="fa-solid fa-rotate mr-1"></i> Orbit Reach
+          </button>
+          <button id="btn-cam-nadir" class="px-3.5 py-1.5 rounded-md bg-slate-800 border border-slate-700 text-slate-300 text-xs font-mono font-semibold hover:bg-slate-700 transition-colors">
+            <i class="fa-solid fa-arrows-to-dot mr-1"></i> Top-Down Nadir
+          </button>
+          <button id="btn-toggle-points" class="px-3.5 py-1.5 rounded-md bg-slate-800 border border-slate-700 text-slate-300 text-xs font-mono font-semibold hover:bg-slate-700 transition-colors">
+            <i class="fa-solid fa-braille mr-1"></i> Sounding Density
+          </button>
+        </div>
+      </div>
+
+      <div class="relative w-full h-[460px] rounded-xl overflow-hidden border border-slate-800 bg-slate-950 shadow-2xl">
+        <div id="threejs-container" class="w-full h-full block"></div>
+
+        <div class="absolute bottom-4 left-4 right-4 z-10 flex flex-wrap items-center justify-between gap-3 pointer-events-none">
+          <div class="bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded border border-slate-700 pointer-events-auto flex items-center gap-3 font-mono text-xs">
+            <div class="flex items-center gap-1.5 text-cyan-400 font-semibold">
+              <i class="fa-solid fa-ship"></i>
+              <span>USV SOUNDING TRANSECT ACTIVE</span>
+            </div>
+            <div class="w-px h-4 bg-slate-700"></div>
+            <div class="text-slate-400">DEPTH INTERVAL: 0.25m - 18.4m</div>
+          </div>
+          <div class="bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded border border-slate-700 text-xs font-mono text-slate-400">
+            DRAG TO ROTATE • SCROLL TO ZOOM
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SERVICES MATRIX (DK DRONES UPGRADE) ================= -->
+  <section class="py-16 bg-white border-t border-border-subtle" id="services-matrix">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="mb-10">
+        <span class="text-xs font-mono font-semibold text-blue-600 tracking-wider uppercase">CORE COMPETENCIES</span>
+        <h2 class="font-display text-2xl sm:text-3xl font-bold text-on-surface mt-1">Specialized Survey &amp; Engineering Solutions</h2>
+        <p class="text-xs sm:text-sm text-text-secondary mt-1">Turnkey airborne and bathymetric execution tailored for infrastructure across Northeast India.</p>
+      </div>
+
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="bg-surface-card p-6 rounded-lg border border-border-subtle shadow-sm hover:border-blue-600 hover:shadow-md transition-all group">
           <div class="w-10 h-10 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
@@ -264,58 +548,11 @@
           </p>
         </div>
       </div>
-
-    </div>
-  </section>
-
-  <!-- ================= THREE.JS INTERACTIVE 3D HYDRO-LIDAR VIEWPORT ================= -->
-  <section class="py-16 bg-navy-dark text-white border-t border-slate-800" id="threejs-viewport">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
-        <div>
-          <span class="text-xs font-mono font-semibold text-cyan-400 tracking-wider uppercase">SIMULATION ENVIRONMENT</span>
-          <h2 class="font-display text-2xl sm:text-3xl font-bold text-white mt-1">Interactive 3D Hydrodynamic &amp; LiDAR Bed Surface</h2>
-          <p class="text-xs sm:text-sm text-slate-400 mt-1">Real-time WebGL canvas simulating Brahmaputra bathymetric contours, flow soundings, and survey boat transects.</p>
-        </div>
-
-        <!-- 3D Controls -->
-        <div class="flex flex-wrap gap-2">
-          <button id="btn-cam-orbit" class="px-3.5 py-1.5 rounded-md bg-cyan-600 text-white text-xs font-mono font-semibold hover:bg-cyan-500 transition-colors">
-            <i class="fa-solid fa-rotate mr-1"></i> Orbit Reach
-          </button>
-          <button id="btn-cam-nadir" class="px-3.5 py-1.5 rounded-md bg-slate-800 border border-slate-700 text-slate-300 text-xs font-mono font-semibold hover:bg-slate-700 transition-colors">
-            <i class="fa-solid fa-arrows-to-dot mr-1"></i> Top-Down Nadir
-          </button>
-          <button id="btn-toggle-points" class="px-3.5 py-1.5 rounded-md bg-slate-800 border border-slate-700 text-slate-300 text-xs font-mono font-semibold hover:bg-slate-700 transition-colors">
-            <i class="fa-solid fa-braille mr-1"></i> Sounding Density
-          </button>
-        </div>
-      </div>
-
-      <!-- Canvas Frame with HUD Elements -->
-      <div class="relative w-full h-[460px] rounded-xl overflow-hidden border border-slate-800 bg-slate-950 shadow-2xl">
-        <div id="threejs-container" class="w-full h-full block"></div>
-
-        <!-- Bottom Telemetry Banner -->
-        <div class="absolute bottom-4 left-4 right-4 z-10 flex flex-wrap items-center justify-between gap-3 pointer-events-none">
-          <div class="bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded border border-slate-700 pointer-events-auto flex items-center gap-3 font-mono text-xs">
-            <div class="flex items-center gap-1.5 text-cyan-400 font-semibold">
-              <i class="fa-solid fa-ship"></i>
-              <span>USV SOUNDING TRANSECT ACTIVE</span>
-            </div>
-            <div class="w-px h-4 bg-slate-700"></div>
-            <div class="text-slate-400">DEPTH INTERVAL: 0.25m - 18.4m</div>
-          </div>
-          <div class="bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded border border-slate-700 text-xs font-mono text-slate-400">
-            DRAG TO ROTATE • SCROLL TO ZOOM
-          </div>
-        </div>
-      </div>
     </div>
   </section>
 
   <!-- ================= MAJOR INSTITUTIONAL CONTRACTS COMPLETED ================= -->
-  <section class="py-16 bg-white border-t border-border-subtle" id="completed-contracts">
+  <section class="py-16 bg-surface-canvas border-t border-border-subtle" id="completed-contracts">
     <div class="max-w-7xl mx-auto px-6">
       <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
         <div>
@@ -324,7 +561,6 @@
           <p class="text-xs sm:text-sm text-text-secondary mt-1">Verified survey clearances, government deliverables, and statutory hydrologic project reports.</p>
         </div>
 
-        <!-- Category Filters -->
         <div class="flex flex-wrap gap-2">
           <button class="filter-tab-btn active px-3.5 py-1.5 rounded-md bg-blue-600 text-white text-xs font-semibold shadow-sm transition-colors" onclick="filterProjects('all', this)">All Sectors</button>
           <button class="filter-tab-btn px-3.5 py-1.5 rounded-md bg-white border border-border-strong text-text-secondary text-xs font-medium hover:bg-surface-slate-subtle transition-colors" onclick="filterProjects('uav', this)">Airborne LiDAR &amp; UAV</button>
@@ -333,13 +569,12 @@
         </div>
       </div>
 
-      <!-- Contracts Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="projects-grid"></div>
     </div>
   </section>
 
   <!-- ================= SURVEY INSTRUMENTATION FLEET ================= -->
-  <section class="py-16 bg-surface-canvas border-t border-border-subtle" id="survey-fleet">
+  <section class="py-16 bg-white border-t border-border-subtle" id="survey-fleet">
     <div class="max-w-7xl mx-auto px-6">
       <div class="mb-8">
         <span class="text-xs font-mono font-semibold text-blue-600 tracking-wider uppercase">ENTERPRISE HARDWARE</span>
@@ -347,16 +582,15 @@
         <p class="text-xs sm:text-sm text-text-secondary mt-1">Autonomous acoustic sounding vessels, high-altitude LiDAR carriers, and geodetic RTK baselines.</p>
       </div>
 
-      <!-- Split Master-Detail Grid -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         <div class="lg:col-span-5 space-y-3" id="hardware-list"></div>
-        <div class="lg:col-span-7 bg-white rounded-xl border border-border-subtle p-6 lg:p-8 shadow-sm" id="hardware-details"></div>
+        <div class="lg:col-span-7 bg-surface-slate-subtle rounded-xl border border-border-subtle p-6 lg:p-8 shadow-sm" id="hardware-details"></div>
       </div>
     </div>
   </section>
 
   <!-- ================= OPERATIONAL DEPLOYMENT FOOTPRINT (LEAFLET GIS) ================= -->
-  <section class="py-16 bg-white border-t border-border-subtle" id="operational-reach">
+  <section class="py-16 bg-surface-canvas border-t border-border-subtle" id="operational-reach">
     <div class="max-w-7xl mx-auto px-6">
       <div class="mb-8">
         <span class="text-xs font-mono font-semibold text-blue-600 tracking-wider uppercase">DEPLOYMENT READINESS</span>
@@ -369,7 +603,6 @@
       <div class="rounded-xl overflow-hidden border border-border-subtle shadow-lg bg-navy-dark relative">
         <div id="interactive-map" class="w-full h-80 sm:h-[500px] bg-slate-950"></div>
         
-        <!-- Bottom Metrics Strip -->
         <div class="bg-slate-900 border-t border-slate-800 px-6 py-3.5 flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-slate-300">
           <div class="flex flex-wrap items-center gap-4">
             <span class="flex items-center gap-1.5"><strong class="text-cyan-400">1,200+ km</strong> River Profiled</span>
@@ -387,9 +620,9 @@
   </section>
 
   <!-- ================= CONTACT & LEAD CONSULTANT PROFILE ================= -->
-  <section class="py-16 bg-surface-canvas border-t border-border-subtle" id="contact">
+  <section class="py-16 bg-white border-t border-border-subtle" id="contact">
     <div class="max-w-7xl mx-auto px-6">
-      <div class="bg-white rounded-2xl border border-border-strong p-8 lg:p-12 shadow-sm">
+      <div class="bg-surface-canvas rounded-2xl border border-border-strong p-8 lg:p-12 shadow-sm">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           
           <div class="lg:col-span-7">
@@ -411,10 +644,10 @@
             </div>
           </div>
 
-          <div class="lg:col-span-5 bg-surface-slate-subtle rounded-xl p-6 border border-border-subtle">
+          <div class="lg:col-span-5 bg-white rounded-xl p-6 border border-border-subtle shadow-sm">
             <h3 class="font-display text-base font-bold text-on-surface mb-4">Direct Communication Channels</h3>
             <div class="space-y-3 mb-5">
-              <a class="flex items-center justify-between p-3.5 rounded-lg bg-white border border-border-strong hover:border-blue-600 transition-all group" href="tel:+919957187257">
+              <a class="flex items-center justify-between p-3.5 rounded-lg bg-surface-canvas border border-border-strong hover:border-blue-600 transition-all group" href="tel:+919957187257">
                 <div class="flex items-center gap-3">
                   <div class="w-9 h-9 rounded-md bg-blue-50 group-hover:bg-blue-600 group-hover:text-white text-blue-600 flex items-center justify-center transition-colors">
                     <i class="fa-solid fa-phone text-sm"></i>
@@ -427,7 +660,7 @@
                 <i class="fa-solid fa-arrow-up-right-from-square text-xs text-text-secondary group-hover:text-blue-600"></i>
               </a>
 
-              <a class="flex items-center justify-between p-3.5 rounded-lg bg-white border border-border-strong hover:border-blue-600 transition-all group" href="mailto:kishur.konwar@gmail.com">
+              <a class="flex items-center justify-between p-3.5 rounded-lg bg-surface-canvas border border-border-strong hover:border-blue-600 transition-all group" href="mailto:kishur.konwar@gmail.com">
                 <div class="flex items-center gap-3">
                   <div class="w-9 h-9 rounded-md bg-blue-50 group-hover:bg-blue-600 group-hover:text-white text-blue-600 flex items-center justify-center transition-colors">
                     <i class="fa-solid fa-envelope text-sm"></i>
@@ -483,7 +716,11 @@
 
   <!-- ================= SCRIPTS ================= -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/threejs/r125/three.min.js"></script>
+  <!-- Three.js + GLTF Loader + PLY Loader -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/PLYLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
   <script>
     // 1. VIDEO CONTROL LOGIC
@@ -504,7 +741,160 @@
       }
     }
 
-    // 2. PROJECT DATASET & DRAWER CONTROLS
+    // 2. DEMO TAB SWITCHING
+    function switchDemoTab(cat, btn) {
+      document.querySelectorAll('#demo-tab-btns .demo-tab').forEach(b => {
+        b.classList.remove('bg-cyan-600', 'text-white');
+        b.classList.add('bg-slate-900', 'text-slate-400');
+      });
+      btn.classList.add('bg-cyan-600', 'text-white');
+      btn.classList.remove('bg-slate-900', 'text-slate-400');
+
+      document.querySelectorAll('#demo-cards-grid .demo-card').forEach(card => {
+        if (cat === 'all' || card.getAttribute('data-category') === cat) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // 3. INTERACTIVE 3D MODAL VIEWER (GLB & PLY RENDERER)
+    let modalScene, modalCamera, modalRenderer, modalControls, currentLoadedMesh;
+
+    function initModalViewer() {
+      const container = document.getElementById('modal-canvas-container');
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+
+      modalScene = new THREE.Scene();
+      modalScene.background = new THREE.Color(0x060d17);
+
+      modalCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
+      modalCamera.position.set(5, 5, 5);
+
+      modalRenderer = new THREE.WebGLRenderer({ antialias: true });
+      modalRenderer.setSize(w, h);
+      modalRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      container.appendChild(modalRenderer.domElement);
+
+      modalControls = new THREE.OrbitControls(modalCamera, modalRenderer.domElement);
+      modalControls.enableDamping = true;
+
+      const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);
+      modalScene.add(hemiLight);
+
+      const dirLight = new THREE.DirectionalLight(0x38bdf8, 1.5);
+      dirLight.position.set(10, 20, 10);
+      modalScene.add(dirLight);
+
+      // Grid helper for surveyor context
+      const grid = new THREE.GridHelper(20, 20, 0x0284c7, 0x1e293b);
+      modalScene.add(grid);
+
+      function animate() {
+        requestAnimationFrame(animate);
+        modalControls.update();
+        modalRenderer.render(modalScene, modalCamera);
+      }
+      animate();
+
+      window.addEventListener('resize', () => {
+        if (document.getElementById('model-modal').classList.contains('flex')) {
+          const nw = container.clientWidth;
+          const nh = container.clientHeight;
+          modalCamera.aspect = nw / nh;
+          modalCamera.updateProjectionMatrix();
+          modalRenderer.setSize(nw, nh);
+        }
+      });
+    }
+
+    function launchInteractiveViewer(type, fileUrl, label) {
+      const modal = document.getElementById('model-modal');
+      const loader = document.getElementById('canvas-loader');
+      document.getElementById('modal-title').innerText = label;
+      document.getElementById('modal-path').innerText = fileUrl;
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      loader.classList.remove('hidden');
+
+      if (!modalRenderer) {
+        initModalViewer();
+      }
+
+      // Remove existing mesh
+      if (currentLoadedMesh) {
+        modalScene.remove(currentLoadedMesh);
+        currentLoadedMesh = null;
+      }
+
+      if (type === 'glb') {
+        const gltfLoader = new THREE.GLTFLoader();
+        gltfLoader.load(
+          fileUrl,
+          (gltf) => {
+            currentLoadedMesh = gltf.scene;
+            
+            // Auto center and scale
+            const box = new THREE.Box3().setFromObject(currentLoadedMesh);
+            const center = box.getCenter(new THREE.Vector3());
+            const size = box.getSize(new THREE.Vector3());
+            currentLoadedMesh.position.sub(center);
+            
+            const maxDim = Math.max(size.x, size.y, size.z);
+            if (maxDim > 0) {
+              const scale = 5 / maxDim;
+              currentLoadedMesh.scale.set(scale, scale, scale);
+            }
+
+            modalScene.add(currentLoadedMesh);
+            loader.classList.add('hidden');
+          },
+          undefined,
+          (error) => {
+            console.error(error);
+            loader.innerHTML = `<span class="text-xs font-mono text-rose-400">Failed to load GLB: Check path ${fileUrl}</span>`;
+          }
+        );
+      } else if (type === 'ply') {
+        const plyLoader = new THREE.PLYLoader();
+        plyLoader.load(
+          fileUrl,
+          (geometry) => {
+            geometry.computeVertexNormals();
+            let material;
+            if (geometry.hasAttribute('color')) {
+              material = new THREE.PointsMaterial({ size: 0.05, vertexColors: true });
+            } else {
+              material = new THREE.PointsMaterial({ size: 0.05, color: 0x38bdf8 });
+            }
+            currentLoadedMesh = new THREE.Points(geometry, material);
+
+            geometry.computeBoundingBox();
+            const center = geometry.boundingBox.getCenter(new THREE.Vector3());
+            currentLoadedMesh.position.sub(center);
+            
+            modalScene.add(currentLoadedMesh);
+            loader.classList.add('hidden');
+          },
+          undefined,
+          (error) => {
+            console.error(error);
+            loader.innerHTML = `<span class="text-xs font-mono text-rose-400">Failed to load PLY: Check path ${fileUrl}</span>`;
+          }
+        );
+      }
+    }
+
+    function closeInteractiveViewer() {
+      const modal = document.getElementById('model-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // 4. PROJECT DATASET & DRAWER CONTROLS
     const projectData = [
       {
         id: "buridehing",
@@ -671,7 +1061,7 @@
       drawer.classList.remove("flex");
     }
 
-    // 3. HARDWARE FLEET MASTER-DETAIL
+    // 5. HARDWARE FLEET MASTER-DETAIL
     const hardwareFleet = [
       {
         id: "apache6",
@@ -833,20 +1223,18 @@
       `;
     }
 
-    // 4. LEAFLET SATELLITE MAP & MAP.GEOJSON LOADER
+    // 6. LEAFLET SATELLITE MAP & MAP.GEOJSON LOADER
     function initMap() {
       const mapContainer = document.getElementById('interactive-map');
       if (!mapContainer) return;
 
       const map = L.map('interactive-map', { scrollWheelZoom: false }).setView([26.6, 93.8], 7);
 
-      // Google Hybrid Basemap Layer (Satellite + Clear Labels)
       L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
         attribution: '&copy; Google Maps',
         maxZoom: 20
       }).addTo(map);
 
-      // Fetch the actual local map.geojson file
       fetch('./map.geojson')
         .then(response => {
           if (!response.ok) throw new Error("Could not load map.geojson");
@@ -883,7 +1271,6 @@
           }
         })
         .catch(() => {
-          // Fallback regional deployment polygon over Northeast India Reaches
           const fallbackRegion = [
             [27.9, 89.8], [28.2, 91.7], [29.4, 95.0], [28.2, 97.4],
             [27.0, 96.0], [25.6, 94.8], [24.0, 93.3], [23.0, 92.8],
@@ -900,7 +1287,7 @@
         });
     }
 
-    // 5. THREE.JS 3D HYDRODYNAMIC BATHYMETRY & LIDAR SIMULATION
+    // 7. THREE.JS 3D HYDRODYNAMIC BATHYMETRY & LIDAR SIMULATION
     function initThreeJS() {
       const container = document.getElementById('threejs-container');
       if (!container) return;
@@ -919,7 +1306,6 @@
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       container.appendChild(renderer.domElement);
 
-      // Lights
       const ambientLight = new THREE.AmbientLight(0x0ea5e9, 1.3);
       scene.add(ambientLight);
 
@@ -927,7 +1313,6 @@
       dirLight.position.set(20, 30, 15);
       scene.add(dirLight);
 
-      // Riverbed Topographic / Bathymetric Grid
       const gridW = 55;
       const gridH = 55;
       const segments = 60;
@@ -938,7 +1323,6 @@
       for (let i = 0; i < pos.count; i++) {
         const x = pos.getX(i);
         const z = pos.getZ(i);
-        // Hydrodynamic riverbed contours with river channel dip
         const elevation = Math.sin(x * 0.14) * Math.cos(z * 0.14) * 3.2 +
                           Math.sin(x * 0.22) * 1.4 -
                           Math.exp(-((x * x) * 0.008)) * 3.5;
@@ -955,7 +1339,6 @@
       const terrainMesh = new THREE.Mesh(terrainGeo, terrainMat);
       scene.add(terrainMesh);
 
-      // Dense Sounding Point Cloud Particles
       const pointCount = 3800;
       const pointGeo = new THREE.BufferGeometry();
       const pointPositions = new Float32Array(pointCount * 3);
@@ -1001,7 +1384,6 @@
       const pointCloud = new THREE.Points(pointGeo, pointMat);
       scene.add(pointCloud);
 
-      // Acoustic Sounding USV Boat Model
       const boatGroup = new THREE.Group();
       const hullGeo = new THREE.BoxGeometry(2.4, 0.5, 1.2);
       const hullMat = new THREE.MeshPhongMaterial({ color: 0x0f172a, emissive: 0x0284c7, emissiveIntensity: 0.4 });
@@ -1014,7 +1396,6 @@
       mast.position.y = 0.7;
       boatGroup.add(mast);
 
-      // Sounding Beam Cone downward
       const coneGeo = new THREE.ConeGeometry(3.5, 7, 16, 1, true);
       coneGeo.rotateX(Math.PI);
       coneGeo.translate(0, -3.5, 0);
@@ -1029,7 +1410,6 @@
 
       scene.add(boatGroup);
 
-      // Transect Path Spline
       const transectCurve = new THREE.CatmullRomCurve3([
         new THREE.Vector3(-12, 1.2, -10),
         new THREE.Vector3(12, 1.2, -6),
@@ -1038,8 +1418,7 @@
         new THREE.Vector3(-12, 1.2, -10)
       ]);
 
-      // Interactive Control Listeners
-      let camMode = 'orbit'; // 'orbit' | 'nadir'
+      let camMode = 'orbit';
       const btnOrbit = document.getElementById('btn-cam-orbit');
       const btnNadir = document.getElementById('btn-cam-nadir');
       const btnPoints = document.getElementById('btn-toggle-points');
@@ -1067,7 +1446,6 @@
         });
       }
 
-      // Mouse drag rotation
       let isDragging = false, prevMouseX = 0, prevMouseY = 0;
       let rotX = 0, rotY = 0;
 
@@ -1098,13 +1476,11 @@
         renderer.setSize(w, h);
       });
 
-      // Animation Loop
       const clock = new THREE.Clock();
       function animate() {
         requestAnimationFrame(animate);
         const time = clock.getElapsedTime();
 
-        // USV navigation along transect
         const t = (time * 0.06) % 1;
         const posAt = transectCurve.getPointAt(t);
         boatGroup.position.copy(posAt);
@@ -1113,11 +1489,9 @@
         boatGroup.lookAt(posAt.clone().add(tangent));
         boatGroup.position.y += Math.sin(time * 3) * 0.08;
 
-        // Acoustic Beam Pulse
         cone.scale.x = 1 + Math.sin(time * 4) * 0.15;
         cone.scale.z = 1 + Math.sin(time * 4) * 0.15;
 
-        // Camera mode positioning
         if (camMode === 'nadir') {
           camera.position.set(0, 34, 0.1);
           camera.lookAt(0, 0, 0);
