@@ -8,7 +8,7 @@
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com" rel="preconnect"/>
   <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet"/>
   
   <!-- FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
@@ -203,7 +203,7 @@
     </div>
   </section>
 
-  <!-- ================= LIVE DATASET DEMOS (RUNNING VIA SANDBOX MODALS) ================= -->
+  <!-- ================= LIVE DATASET DEMOS (RUNNING IN-APPLET MODALS) ================= -->
   <section class="py-20 bg-slate-950 text-white border-t border-slate-800" id="live-demos">
     <div class="max-w-7xl mx-auto px-6">
       
@@ -217,7 +217,7 @@
             Interactive Drone &amp; Hydro Data Demos
           </h2>
           <p class="text-slate-400 text-sm sm:text-base max-w-2xl mt-2 leading-relaxed">
-            All models execute live inside secure client-side templates. Inspect raw point clouds, reality meshes, vector contours, and volumetric models directly in-browser without downloads.
+            All models execute live inside secure client-side templates. Inspect raw point clouds, reality meshes, vector contours, and volumetric models directly in-browser.
           </p>
         </div>
 
@@ -262,7 +262,7 @@
               </div>
             </div>
           </div>
-          <div class="p-5 pt-0">
+          <div class="p-5 pt-0 space-y-2">
             <button onclick="openAppletModal('3D_UnderConstruction_Model/index.html', '3D Civil Infrastructure & Contours Viewer')" class="w-full py-2.5 px-3 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-mono font-semibold transition flex items-center justify-center gap-2 shadow-lg shadow-cyan-950/50">
               <i class="fa-solid fa-cube"></i>
               <span>Launch 3D Model</span>
@@ -405,9 +405,8 @@
       <div class="flex items-center justify-between px-6 py-3.5 border-b border-slate-800 bg-slate-950">
         <div class="flex items-center gap-3 font-mono text-xs">
           <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <!-- Only the title is shown; the internal file path is hidden -->
           <span class="text-white font-bold tracking-wide" id="applet-modal-title">Live Survey Applet</span>
-          <span class="text-slate-600 hidden sm:inline">|</span>
-          <span class="text-cyan-400 text-[11px] hidden sm:inline" id="applet-modal-src"></span>
         </div>
         <div class="flex items-center gap-3">
           <button onclick="toggleAppletFullscreen()" class="text-slate-400 hover:text-white text-xs font-mono px-2 py-1 rounded bg-slate-800 border border-slate-700 hidden sm:flex items-center gap-1.5">
@@ -593,21 +592,17 @@
     </div>
   </section>
 
-  <!-- ================= CONTACT & LEAD CONSULTANT PROFILE ================= -->
+  <!-- ================= CONTACT & CONSULTANT PROFILE (BADGES REMOVED) ================= -->
   <section class="py-16 bg-white border-t border-border-subtle" id="contact">
     <div class="max-w-7xl mx-auto px-6">
       <div class="bg-surface-canvas rounded-2xl border border-border-strong p-8 lg:p-12 shadow-sm">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           
           <div class="lg:col-span-7">
-            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-mono font-semibold uppercase tracking-wider mb-3">
-              <i class="fa-solid fa-shield-halved text-xs"></i>
-              <span>Registered Geospatial Authority</span>
-            </div>
             <h2 class="font-display text-3xl font-extrabold text-on-surface mb-2">Kishur Konwar</h2>
-            <div class="text-sm font-semibold text-blue-600 mb-4">Lead Consultant &amp; Proprietor | GIS &amp; Civil Engineering Consultancy</div>
+            <div class="text-sm font-semibold text-blue-600 mb-4">Lead Consultant | GIS &amp; Civil Engineering Consultancy</div>
             <p class="text-xs sm:text-sm text-text-secondary leading-relaxed mb-6">
-              Empanelled engineering practice executing comprehensive hydrographic soundings, UAV LiDAR campaigns, bathymetric model validation, and government-grade Detailed Project Reports (DPR).
+              Engineering consultancy executing comprehensive hydrographic soundings, UAV LiDAR campaigns, bathymetric model validation, and Detailed Project Reports (DPR).
             </p>
             <div class="flex items-start gap-3 text-xs sm:text-sm text-text-secondary">
               <i class="fa-solid fa-location-dot text-blue-600 text-base mt-0.5"></i>
@@ -650,7 +645,6 @@
 
             <div class="pt-3 border-t border-border-subtle flex items-center justify-between text-xs text-text-secondary font-mono">
               <span>GST &amp; MSME Registered</span>
-              <span class="text-emerald-600 font-semibold">• State Tender Eligible</span>
             </div>
           </div>
 
@@ -673,7 +667,7 @@
   <footer class="w-full py-10 px-6 border-t border-border-subtle bg-white text-center text-xs text-text-secondary">
     <div class="max-w-4xl mx-auto flex flex-col items-center">
       <h3 class="font-display text-base font-bold text-on-surface mb-1">Kishur Konwar</h3>
-      <p class="font-medium mb-1">Lead Consultant &amp; Proprietor | GIS &amp; Civil Engineering Consultancy</p>
+      <p class="font-medium mb-1">Lead Consultant | GIS &amp; Civil Engineering Consultancy</p>
       <p class="mb-4">Registered Office: 1st Floor, N.R. Market, Boarding Road, Sivasagar, Assam – 785640</p>
       
       <div class="flex items-center gap-4 mb-4">
@@ -729,16 +723,14 @@
       });
     }
 
-    // 3. SECURE APPLET RUNNER (IFRAME MODAL)
+    // 3. SECURE APPLET RUNNER (PATH HIDDEN FROM HEADER)
     function openAppletModal(url, title) {
       const modal = document.getElementById('applet-modal');
       const iframe = document.getElementById('applet-iframe');
       const titleEl = document.getElementById('applet-modal-title');
-      const srcEl = document.getElementById('applet-modal-src');
       const loader = document.getElementById('applet-loader');
 
       titleEl.innerText = title;
-      srcEl.innerText = url;
       loader.classList.remove('hidden');
 
       iframe.src = url;
@@ -1098,7 +1090,7 @@
           <h2 class="font-display text-2xl font-bold text-on-surface mt-2.5">${p.title}</h2>
         </div>
         <p class="text-sm text-text-secondary mb-6 leading-relaxed">${p.summary}</p>
-        <h4 class="text-xs font-mono font-bold tracking-wider text-blue-600 uppercase mb-3">Verified Technical Deliverables</h4>
+        <h4 class="text-xs font-mono font-bold tracking-wider text-blue-600 uppercase mb-3">Technical Deliverables</h4>
         <ul class="space-y-2.5 mb-6">
           ${p.specs.map(s => `
             <li class="text-xs sm:text-sm text-slate-700 flex items-start gap-2.5">
@@ -1107,9 +1099,6 @@
             </li>
           `).join("")}
         </ul>
-        <div class="p-3.5 rounded-lg bg-blue-50 border border-blue-200 text-xs text-blue-800 font-medium">
-          Verified technical contract executed and formally closed with statutory completion certification.
-        </div>
       `;
       drawer.classList.remove("hidden");
       drawer.classList.add("flex");
@@ -1403,7 +1392,7 @@
       animate();
     }
 
-    // Window Load Trigger
+    // Window Init
     window.addEventListener("DOMContentLoaded", () => {
       renderProjects(projectData);
       renderHardware();
