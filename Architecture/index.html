@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Point Cloud Viewer</title>
   <style>
     body {
@@ -19,29 +19,29 @@
     }
     #ui {
       position: absolute;
-      top: 20px;
-      left: 20px;
+      top: 16px;
+      left: 16px;
       z-index: 10;
-      background: rgba(22, 27, 34, 0.88);
+      background: rgba(22, 27, 34, 0.90);
       backdrop-filter: blur(12px);
-      padding: 16px 20px;
+      padding: 14px 18px;
       border-radius: 12px;
       border: 1px solid rgba(255, 255, 255, 0.12);
       color: #e6edf3;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-      min-width: 200px;
+      min-width: 210px;
     }
     #ui h3 {
-      margin: 0 0 14px 0;
-      font-size: 14px;
+      margin: 0 0 12px 0;
+      font-size: 13px;
       font-weight: 600;
       letter-spacing: 0.5px;
       text-transform: uppercase;
       color: #58a6ff;
     }
     .control-group {
-      margin-bottom: 12px;
-      font-size: 13px;
+      margin-bottom: 10px;
+      font-size: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -50,10 +50,10 @@
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
     input[type=range] {
-      width: 110px;
+      width: 100px;
       accent-color: #58a6ff;
       cursor: pointer;
     }
@@ -85,8 +85,9 @@
       transform: translate(-50%, -50%);
       text-align: center;
       color: #58a6ff;
-      font-size: 15px;
+      font-size: 14px;
       letter-spacing: 0.5px;
+      font-family: monospace;
     }
     .spinner {
       width: 32px;
@@ -101,23 +102,45 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+    #error-details {
+      display: none;
+      max-width: 320px;
+      margin-top: 10px;
+      padding: 10px;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      border-radius: 8px;
+      color: #fca5a5;
+      font-size: 11px;
+      line-height: 1.4;
+    }
   </style>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
 </head>
 <body>
 
-  <!-- Loading State -->
+  <!-- Loading State & Error Container -->
   <div id="loading-container">
-    <div class="spinner"></div>
-    <div id="loading-text">Loading Point Cloud...</div>
+    <div class="spinner" id="loading-spinner"></div>
+    <div id="loading-text">Streaming cloud.ply...</div>
+    <div id="error-details"></div>
   </div>
 
   <!-- Interactive Controls UI -->
   <div id="ui">
-    <h3>Viewer Controls</h3>
+    <h3>Point Cloud Controls</h3>
     
     <div class="control-group">
       <span>Point Size</span>
-      <input type="range" id="size-slider" min="0.005" max="0.1" step="0.005" value="0.02">
+      <input type="range" id="size-slider" min="0.005" max="0.15" step="0.005" value="0.03">
     </div>
 
     <div class="control-group">
@@ -130,22 +153,13 @@
       <span>Background</span>
       <select id="bg-select">
         <option value="dark">Dark</option>
-        <option value="slate">Slate Grey</option>
+        <option value="slate">Slate</option>
         <option value="light">Light</option>
       </select>
     </div>
 
     <button id="reset-cam">Reset View</button>
   </div>
-
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-      }
-    }
-  </script>
 
   <script type="module">
     import * as THREE from 'three';
@@ -156,8 +170,10 @@
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0d1117);
 
-    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 5000);
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.01, 50000);
+    camera.position.set(0, 10, 20);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     document.body.appendChild(renderer.domElement);
@@ -172,59 +188,86 @@
     let initialCameraPosition = new THREE.Vector3();
     let initialTarget = new THREE.Vector3(0, 0, 0);
 
-    // 2. Load Point Cloud
+    // 2. Resolve Path explicitly to current folder
+    const targetUrl = new URL('cloud.ply', window.location.href).href;
+
     const loader = new PLYLoader();
-    loader.load(
-      './cloud.ply',
-      (geometry) => {
-        // Center the cloud at local origin
+    const loadingText = document.getElementById('loading-text');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const errorDetails = document.getElementById('error-details');
+
+    // Fetch as raw ArrayBuffer first to detect Git LFS pointer files
+    fetch(targetUrl)
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status} ${response.statusText} - File not found at ${targetUrl}`);
+        }
+
+        const contentLength = response.headers.get('content-length');
+        const buffer = await response.arrayBuffer();
+
+        // Check if file is actually a Git LFS text pointer (< 200 bytes)
+        if (buffer.byteLength < 300) {
+          const textDecoder = new TextDecoder();
+          const firstBytes = textDecoder.decode(buffer);
+          if (firstBytes.includes('git-lfs') || firstBytes.includes('version https://')) {
+            throw new Error(`Git LFS Pointer detected! The actual binary file was not committed to GitHub. Re-upload cloud.ply without Git LFS.`);
+          }
+        }
+
+        // Parse PLY from raw ArrayBuffer
+        return loader.parse(buffer);
+      })
+      .then((geometry) => {
+        geometry.computeVertexNormals();
         geometry.computeBoundingBox();
         geometry.center();
 
-        // Agisoft uses Z-up; convert to Three.js Y-up
+        // Photogrammetry Z-up to Three.js Y-up conversion
         geometry.rotateX(-Math.PI / 2);
 
         const hasColors = geometry.hasAttribute('color');
 
         pointsMaterial = new THREE.PointsMaterial({
-          size: 0.02,
+          size: 0.03,
           vertexColors: hasColors,
-          color: hasColors ? 0xffffff : 0x58a6ff,
+          color: hasColors ? 0xffffff : 0x38bdf8,
           sizeAttenuation: true
         });
 
         const pointCloud = new THREE.Points(geometry, pointsMaterial);
         scene.add(pointCloud);
 
-        // Frame the object at an oblique 3D angle
+        // Frame camera automatically
         geometry.computeBoundingSphere();
         const sphere = geometry.boundingSphere;
-        const radius = sphere.radius || 10;
+        const radius = (sphere && sphere.radius > 0) ? sphere.radius : 10;
         
-        // Position camera: elevated 45 degrees, viewing diagonally
-        camera.position.set(radius * 0.9, radius * 0.8, radius * 1.2);
+        camera.position.set(radius * 1.0, radius * 0.8, radius * 1.3);
+        camera.near = radius / 100;
+        camera.far = radius * 100;
+        camera.updateProjectionMatrix();
+
         controls.target.set(0, 0, 0);
-        camera.lookAt(0, 0, 0);
+        controls.maxDistance = radius * 8;
         controls.update();
 
-        // Save position for the Reset button
         initialCameraPosition.copy(camera.position);
+        initialTarget.copy(controls.target);
 
-        // Remove loader
+        // Hide Loading State
         document.getElementById('loading-container').style.display = 'none';
-      },
-      (xhr) => {
-        const percent = Math.round((xhr.loaded / (xhr.total || 1)) * 100);
-        document.getElementById('loading-text').innerText = `Loading: ${percent}%`;
-      },
-      (err) => {
-        console.error('Error loading PLY:', err);
-        document.getElementById('loading-text').innerText = 'Failed to load cloud.ply';
-        document.querySelector('.spinner').style.display = 'none';
-      }
-    );
+      })
+      .catch((err) => {
+        console.error('Point Cloud Load Error:', err);
+        loadingSpinner.style.display = 'none';
+        loadingText.innerText = 'Failed to load cloud.ply';
+        loadingText.style.color = '#ef4444';
+        errorDetails.style.display = 'block';
+        errorDetails.innerText = err.message || 'Unknown error parsing cloud.ply';
+      });
 
-    // 3. UI Event Listeners
+    // 3. UI Controls
     document.getElementById('size-slider').addEventListener('input', (e) => {
       if (pointsMaterial) {
         pointsMaterial.size = parseFloat(e.target.value);
@@ -238,8 +281,8 @@
     document.getElementById('bg-select').addEventListener('change', (e) => {
       const mode = e.target.value;
       if (mode === 'dark') scene.background.setHex(0x0d1117);
-      else if (mode === 'slate') scene.background.setHex(0x21262d);
-      else if (mode === 'light') scene.background.setHex(0xe6edf3);
+      else if (mode === 'slate') scene.background.setHex(0x1e293b);
+      else if (mode === 'light') scene.background.setHex(0xf8fafc);
     });
 
     document.getElementById('reset-cam').addEventListener('click', () => {
