@@ -10,9 +10,8 @@
   <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
   
-  <!-- FontAwesome & Material Symbols -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
 
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -79,16 +78,6 @@
       0%, 100% { opacity: 1; transform: scale(1); }
       50% { opacity: .4; transform: scale(1.25); }
     }
-    .leaflet-popup-content-wrapper {
-      background: rgba(15, 23, 42, 0.94);
-      color: #f8fafc;
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      border-radius: 8px;
-      backdrop-filter: blur(8px);
-    }
-    .leaflet-popup-tip {
-      background: rgba(15, 23, 42, 0.94);
-    }
   </style>
 </head>
 <body class="bg-surface-canvas text-on-surface antialiased font-body selection:bg-blue-100 selection:text-blue-900">
@@ -108,9 +97,10 @@
         <a class="text-cyan-600 font-bold hover:text-cyan-700 transition-colors" href="#live-demos">
           <i class="fa-solid fa-cube text-cyan-500 mr-1"></i> Data Demos
         </a>
-        <a class="hover:text-primary transition-colors" href="#completed-contracts">Completed Contracts</a>
-        <a class="hover:text-primary transition-colors" href="#survey-fleet">Survey Fleet</a>
-        <a class="hover:text-primary transition-colors" href="#operational-reach">Operational Reach</a>
+        <a class="hover:text-primary transition-colors" href="#services-matrix">Services</a>
+        <a class="hover:text-primary transition-colors" href="#completed-contracts">Contracts</a>
+        <a class="hover:text-primary transition-colors" href="#survey-fleet">Fleet</a>
+        <a class="hover:text-primary transition-colors" href="#operational-reach">Reach</a>
         <a class="hover:text-primary transition-colors" href="#contact">Contact</a>
       </nav>
 
@@ -156,7 +146,7 @@
         </div>
       </div>
 
-      <!-- VIDEO MONITOR -->
+      <!-- Video Stage -->
       <div class="rounded-xl overflow-hidden border border-border-subtle shadow-lg bg-navy-dark text-white relative mb-12">
         <div class="flex flex-wrap items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-800 text-xs font-mono">
           <div class="flex items-center gap-2.5">
@@ -190,7 +180,6 @@
             poster="./IMAGE1.jpg"
             preload="auto">
             <source src="./VIDEO1.mp4" type="video/mp4" />
-            Your browser does not support HTML5 video playback.
           </video>
           
           <div class="absolute inset-0 bg-grid-dark opacity-35 pointer-events-none"></div>
@@ -214,7 +203,7 @@
     </div>
   </section>
 
-  <!-- ================= LIVE DATASET DEMOS (MATCHING REPO ROOT EXACTLY) ================= -->
+  <!-- ================= LIVE DATASET DEMOS (RUNNING VIA SANDBOX MODALS) ================= -->
   <section class="py-20 bg-slate-950 text-white border-t border-slate-800" id="live-demos">
     <div class="max-w-7xl mx-auto px-6">
       
@@ -228,7 +217,7 @@
             Interactive Drone &amp; Hydro Data Demos
           </h2>
           <p class="text-slate-400 text-sm sm:text-base max-w-2xl mt-2 leading-relaxed">
-            Real datasets captured across regional infrastructure sites. Inspect raw point clouds, reality meshes, vector contours, and volumetric models directly in-browser.
+            All models execute live inside secure client-side templates. Inspect raw point clouds, reality meshes, vector contours, and volumetric models directly in-browser without downloads.
           </p>
         </div>
 
@@ -242,7 +231,7 @@
         </div>
       </div>
 
-      <!-- Demo Cards Grid with Thumbnails -->
+      <!-- Demo Cards Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12" id="demo-cards-grid">
         
         <!-- CARD 1: 3D Under Construction -->
@@ -273,14 +262,10 @@
               </div>
             </div>
           </div>
-          <div class="p-5 pt-0 space-y-2">
-            <button onclick="launchInteractiveViewer('glb', '3D_UnderConstruction_Model/3DModel-v1.glb', '3D Civil Infrastructure Model')" class="w-full py-2 px-3 rounded-lg bg-cyan-600/20 hover:bg-cyan-600 text-cyan-300 hover:text-white border border-cyan-500/40 text-xs font-mono font-semibold transition flex items-center justify-center gap-2">
+          <div class="p-5 pt-0">
+            <button onclick="openAppletModal('3D_UnderConstruction_Model/index.html', '3D Civil Infrastructure & Contours Viewer')" class="w-full py-2.5 px-3 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-mono font-semibold transition flex items-center justify-center gap-2 shadow-lg shadow-cyan-950/50">
               <i class="fa-solid fa-cube"></i>
               <span>Launch 3D Model</span>
-            </button>
-            <button onclick="inspectContourGeoJSON('3D_UnderConstruction_Model/contours.geojson')" class="w-full py-1.5 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-mono transition flex items-center justify-center gap-1.5 border border-slate-700">
-              <i class="fa-solid fa-map"></i>
-              <span>Inspect Contours GeoJSON</span>
             </button>
           </div>
         </div>
@@ -314,7 +299,7 @@
             </div>
           </div>
           <div class="p-5 pt-0">
-            <button onclick="launchInteractiveViewer('ply', 'Architecture/Church_Structure.ply', 'Architectural Masonry Cloud')" class="w-full py-2 px-3 rounded-lg bg-indigo-600/20 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/40 text-xs font-mono font-semibold transition flex items-center justify-center gap-2">
+            <button onclick="openAppletModal('Architecture/index.html', 'Architectural Masonry Point Cloud Viewer')" class="w-full py-2.5 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-mono font-semibold transition flex items-center justify-center gap-2 shadow-lg shadow-indigo-950/50">
               <i class="fa-solid fa-braille"></i>
               <span>Stream Point Cloud</span>
             </button>
@@ -349,25 +334,21 @@
               </div>
             </div>
           </div>
-          <div class="p-5 pt-0 space-y-2">
-            <button onclick="openPMTilesViewer('Urban_Plan/Urban_City_Ortho.pmtiles')" class="w-full py-2 px-3 rounded-lg bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/40 text-xs font-mono font-semibold transition flex items-center justify-center gap-2">
+          <div class="p-5 pt-0">
+            <button onclick="openAppletModal('Urban_Plan/index.html', 'Urban Digital Twin & LiDAR Environment')" class="w-full py-2.5 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-mono font-semibold transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-950/50">
               <i class="fa-solid fa-layer-group"></i>
-              <span>Inspect GIS PMTiles</span>
+              <span>Launch Urban GIS Deck</span>
             </button>
-            <a href="Urban_Plan/Urban_Plan_Compressed.laz" download class="w-full py-1.5 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-mono transition flex items-center justify-center gap-1.5 border border-slate-700">
-              <i class="fa-solid fa-download"></i>
-              <span>Download LAZ Cloud</span>
-            </a>
           </div>
         </div>
 
-        <!-- CARD 4: Mine Site Volumetrics -->
+        <!-- CARD 4: Mine Site Volumetrics & Point Cloud -->
         <div class="demo-card group bg-slate-900/80 border border-slate-800 hover:border-cyan-500/60 rounded-xl overflow-hidden transition-all flex flex-col justify-between" data-category="mining">
           <div>
             <div class="relative h-44 bg-gradient-to-br from-slate-900 via-slate-800 to-amber-950 p-4 flex flex-col justify-between overflow-hidden border-b border-slate-800">
               <div class="absolute inset-0 bg-grid-dark opacity-30"></div>
               <div class="flex items-center justify-between z-10">
-                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-950/80 text-amber-400 border border-amber-800">DSM / DTM / VOL</span>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-800">DSM / DTM / LAZ</span>
                 <span class="text-[10px] font-mono text-slate-400">ERROR &lt; 1%</span>
               </div>
               <div class="z-10 text-center my-auto">
@@ -385,19 +366,15 @@
               </p>
               <div class="flex flex-wrap gap-1 mt-3">
                 <span class="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">Tiles_DSM.tif</span>
-                <span class="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">Tiles_DTM.tif</span>
+                <span class="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded">mine-site-viewer.laz</span>
               </div>
             </div>
           </div>
-          <div class="p-5 pt-0 space-y-2">
-            <button onclick="openMiningViewerModal()" class="w-full py-2 px-3 rounded-lg bg-amber-600/20 hover:bg-amber-600 text-amber-300 hover:text-white border border-amber-500/40 text-xs font-mono font-semibold transition flex items-center justify-center gap-2">
-              <i class="fa-solid fa-layer-group"></i>
+          <div class="p-5 pt-0">
+            <button onclick="openAppletModal('mine-site-viewer-main/index.html', 'Mine Site Sentinel & Volumetrics Deck')" class="w-full py-2.5 px-3 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-xs font-mono font-semibold transition flex items-center justify-center gap-2 shadow-lg shadow-amber-950/50">
+              <i class="fa-solid fa-chart-area"></i>
               <span>Launch Mine Applet</span>
             </button>
-            <a href="mine-site-viewer-main/mine-site-viewer.laz" download class="w-full py-1.5 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-mono transition flex items-center justify-center gap-1.5 border border-slate-700">
-              <i class="fa-solid fa-download"></i>
-              <span>Download Mine LAZ</span>
-            </a>
           </div>
         </div>
 
@@ -422,54 +399,33 @@
     </div>
   </section>
 
-  <!-- ================= 3D WEBGL INTERACTIVE CANVAS MODAL ================= -->
-  <div id="model-modal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden shadow-2xl relative">
-      <!-- Modal Header -->
-      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950">
+  <!-- ================= IN-APPLET MODAL HOST CONTAINER ================= -->
+  <div id="applet-modal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-2 sm:p-6">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-7xl h-[92vh] flex flex-col overflow-hidden shadow-2xl relative">
+      <div class="flex items-center justify-between px-6 py-3.5 border-b border-slate-800 bg-slate-950">
         <div class="flex items-center gap-3 font-mono text-xs">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span class="text-white font-bold" id="modal-title">Dataset Inspection Viewer</span>
-          <span class="text-slate-500">|</span>
-          <span class="text-cyan-400" id="modal-path"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-white font-bold tracking-wide" id="applet-modal-title">Live Survey Applet</span>
+          <span class="text-slate-600 hidden sm:inline">|</span>
+          <span class="text-cyan-400 text-[11px] hidden sm:inline" id="applet-modal-src"></span>
         </div>
-        <button onclick="closeInteractiveViewer()" class="text-slate-400 hover:text-white text-lg px-2">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-
-      <!-- 3D Canvas Viewport -->
-      <div class="relative flex-1 bg-slate-950" id="modal-canvas-container">
-        <!-- Loader Overlay -->
-        <div id="canvas-loader" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/85 z-10">
-          <i class="fa-solid fa-circle-notch fa-spin text-3xl text-cyan-400 mb-3"></i>
-          <span class="text-xs font-mono text-slate-300">Streaming Survey Dataset...</span>
-        </div>
-
-        <!-- Telemetry Floating Box -->
-        <div class="absolute bottom-4 left-4 z-10 bg-slate-900/90 border border-slate-800 p-3 rounded-lg font-mono text-[11px] text-slate-300 space-y-1 backdrop-blur-md">
-          <div class="text-cyan-400 font-bold">CONTROLS:</div>
-          <div>Left Click + Drag : Rotate Orbit</div>
-          <div>Right Click + Drag : Pan Camera</div>
-          <div>Scroll : Zoom In / Out</div>
+        <div class="flex items-center gap-3">
+          <button onclick="toggleAppletFullscreen()" class="text-slate-400 hover:text-white text-xs font-mono px-2 py-1 rounded bg-slate-800 border border-slate-700 hidden sm:flex items-center gap-1.5">
+            <i class="fa-solid fa-expand"></i>
+            <span>Fullscreen</span>
+          </button>
+          <button onclick="closeAppletModal()" class="text-slate-400 hover:text-rose-400 text-lg px-2 transition-colors">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- ================= MINING & GIS VIEWER MODAL APPLET ================= -->
-  <div id="gis-modal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden shadow-2xl relative">
-      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950">
-        <div class="flex items-center gap-3 font-mono text-xs">
-          <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-          <span class="text-white font-bold" id="gis-modal-title">GIS &amp; Mining Inspection Tool</span>
+      <div class="flex-1 w-full h-full relative bg-black">
+        <div id="applet-loader" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-950 z-10 text-cyan-400 font-mono text-xs">
+          <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3"></i>
+          <span>Booting Survey Applet...</span>
         </div>
-        <button onclick="closeGisModal()" class="text-slate-400 hover:text-white text-lg px-2">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
+        <iframe id="applet-iframe" class="w-full h-full border-0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
       </div>
-      <div class="flex-1 bg-slate-950 p-6 overflow-y-auto" id="gis-modal-body"></div>
     </div>
   </div>
 
@@ -511,6 +467,59 @@
           <div class="bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded border border-slate-700 text-xs font-mono text-slate-400">
             DRAG TO ROTATE • SCROLL TO ZOOM
           </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SERVICES MATRIX ================= -->
+  <section class="py-16 bg-white border-t border-border-subtle" id="services-matrix">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="mb-10">
+        <span class="text-xs font-mono font-semibold text-blue-600 tracking-wider uppercase">CORE COMPETENCIES</span>
+        <h2 class="font-display text-2xl sm:text-3xl font-bold text-on-surface mt-1">Specialized Survey &amp; Engineering Solutions</h2>
+        <p class="text-xs sm:text-sm text-text-secondary mt-1">Turnkey airborne and bathymetric execution tailored for infrastructure across Northeast India.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-surface-card p-6 rounded-lg border border-border-subtle shadow-sm hover:border-blue-600 hover:shadow-md transition-all group">
+          <div class="w-10 h-10 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+            <i class="fa-solid fa-road text-base"></i>
+          </div>
+          <h3 class="font-display text-lg font-bold text-on-surface mb-2">Linear Infrastructure Corridors</h3>
+          <p class="text-xs sm:text-sm text-text-secondary leading-relaxed">
+            Continuous high-resolution UAV orthomosaics, Right-of-Way (ROW) boundary delineation, and structure extraction for highway widening.
+          </p>
+        </div>
+
+        <div class="bg-surface-card p-6 rounded-lg border border-border-subtle shadow-sm hover:border-blue-600 hover:shadow-md transition-all group">
+          <div class="w-10 h-10 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+            <i class="fa-solid fa-layer-group text-base"></i>
+          </div>
+          <h3 class="font-display text-lg font-bold text-on-surface mb-2">Airborne LiDAR &amp; Photogrammetry</h3>
+          <p class="text-xs sm:text-sm text-text-secondary leading-relaxed">
+            Sub-decimeter Digital Terrain Models (DTM) and tight-interval contour profiling over heavily vegetated terrain and dyke systems.
+          </p>
+        </div>
+
+        <div class="bg-surface-card p-6 rounded-lg border border-border-subtle shadow-sm hover:border-blue-600 hover:shadow-md transition-all group">
+          <div class="w-10 h-10 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+            <i class="fa-solid fa-water text-base"></i>
+          </div>
+          <h3 class="font-display text-lg font-bold text-on-surface mb-2">Hydrographic Bed Profiling</h3>
+          <p class="text-xs sm:text-sm text-text-secondary leading-relaxed">
+            Acoustic Doppler Current Profiler (ADCP) soundings and dual-frequency sub-surface riverbed mapping for flood mitigation and research institutes.
+          </p>
+        </div>
+
+        <div class="bg-surface-card p-6 rounded-lg border border-border-subtle shadow-sm hover:border-blue-600 hover:shadow-md transition-all group">
+          <div class="w-10 h-10 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+            <i class="fa-solid fa-network-wired text-base"></i>
+          </div>
+          <h3 class="font-display text-lg font-bold text-on-surface mb-2">Watershed &amp; Catchment Networks</h3>
+          <p class="text-xs sm:text-sm text-text-secondary leading-relaxed">
+            Permanent DGPS benchmark network stakeouts, catchment runoff simulations, and turnkey Detailed Project Reports (DPR).
+          </p>
         </div>
       </div>
     </div>
@@ -681,29 +690,15 @@
 
   <!-- ================= SCRIPTS ================= -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-  <!-- Importmap for Three.js ES Modules -->
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-    }
-  }
-  </script>
-
-  <script type="module">
-    import * as THREE from 'three';
-    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-    import { PLYLoader } from 'three/addons/loaders/PLYLoader.js';
-
+  <script>
     // 1. VIDEO CONTROL LOGIC
     const videoEl = document.getElementById('hero-video');
     const toggleBtn = document.getElementById('toggle-video-btn');
     const btnIcon = document.getElementById('btn-icon');
 
-    window.togglePlayState = function() {
+    function togglePlayState() {
       if (!videoEl) return;
       if (videoEl.paused) {
         videoEl.play();
@@ -714,10 +709,10 @@
         btnIcon.className = 'fa-solid fa-play';
         toggleBtn.querySelector('span').innerText = 'Resume Playback';
       }
-    };
+    }
 
     // 2. DEMO TAB SWITCHING
-    window.switchDemoTab = function(cat, btn) {
+    function switchDemoTab(cat, btn) {
       document.querySelectorAll('#demo-tab-btns .demo-tab').forEach(b => {
         b.classList.remove('bg-cyan-600', 'text-white');
         b.classList.add('bg-slate-900', 'text-slate-400');
@@ -732,318 +727,234 @@
           card.style.display = 'none';
         }
       });
-    };
+    }
 
-    // 3. INTERACTIVE 3D MODAL VIEWER (GLB & PLY RENDERER)
-    let modalScene, modalCamera, modalRenderer, modalControls, currentLoadedMesh;
-    const container = document.getElementById('modal-canvas-container');
+    // 3. SECURE APPLET RUNNER (IFRAME MODAL)
+    function openAppletModal(url, title) {
+      const modal = document.getElementById('applet-modal');
+      const iframe = document.getElementById('applet-iframe');
+      const titleEl = document.getElementById('applet-modal-title');
+      const srcEl = document.getElementById('applet-modal-src');
+      const loader = document.getElementById('applet-loader');
 
-    function initModalViewer() {
-      const w = container.clientWidth || 800;
-      const h = container.clientHeight || 500;
+      titleEl.innerText = title;
+      srcEl.innerText = url;
+      loader.classList.remove('hidden');
 
-      modalScene = new THREE.Scene();
-      modalScene.background = new THREE.Color(0x060d17);
+      iframe.src = url;
+      iframe.onload = () => {
+        loader.classList.add('hidden');
+      };
 
-      modalCamera = new THREE.PerspectiveCamera(45, w / h, 0.01, 100000);
-      modalCamera.position.set(0, 5, 10);
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
 
-      modalRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
-      modalRenderer.setSize(w, h);
-      modalRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      modalRenderer.outputColorSpace = THREE.SRGBColorSpace;
-      container.appendChild(modalRenderer.domElement);
+    function closeAppletModal() {
+      const modal = document.getElementById('applet-modal');
+      const iframe = document.getElementById('applet-iframe');
+      iframe.src = "about:blank";
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
 
-      modalControls = new OrbitControls(modalCamera, modalRenderer.domElement);
-      modalControls.enableDamping = true;
-      modalControls.dampingFactor = 0.05;
-
-      const hemiLight = new THREE.HemisphereLight(0xffffff, 0x334155, 1.8);
-      modalScene.add(hemiLight);
-
-      const dirLight1 = new THREE.DirectionalLight(0x38bdf8, 1.5);
-      dirLight1.position.set(20, 40, 20);
-      modalScene.add(dirLight1);
-
-      const dirLight2 = new THREE.DirectionalLight(0xffffff, 1.0);
-      dirLight2.position.set(-20, -20, -20);
-      modalScene.add(dirLight2);
-
-      const grid = new THREE.GridHelper(50, 50, 0x0ea5e9, 0x1e293b);
-      grid.position.y = -0.01;
-      modalScene.add(grid);
-
-      function animate() {
-        requestAnimationFrame(animate);
-        modalControls.update();
-        modalRenderer.render(modalScene, modalCamera);
+    function toggleAppletFullscreen() {
+      const iframe = document.getElementById('applet-iframe');
+      if (iframe.requestFullscreen) {
+        iframe.requestFullscreen();
+      } else if (iframe.webkitRequestFullscreen) {
+        iframe.webkitRequestFullscreen();
       }
-      animate();
+    }
 
-      window.addEventListener('resize', () => {
-        if (document.getElementById('model-modal').classList.contains('flex')) {
-          const nw = container.clientWidth;
-          const nh = container.clientHeight;
-          modalCamera.aspect = nw / nh;
-          modalCamera.updateProjectionMatrix();
-          modalRenderer.setSize(nw, nh);
+    // 4. HARDWARE FLEET MASTER-DETAIL
+    let activeHardwareId = "apache6";
+
+    const hardwareFleet = [
+      {
+        id: "apache6",
+        name: "CHCNAV APACHE 6",
+        category: "Multibeam Bathymetry USV",
+        icon: "fa-ship",
+        runtime: "120 min Autonomous",
+        coverage: "Standard Reservoir / River Cross-Section",
+        useCase: "Autonomous riverbed & reservoir hydrographic sounding in dynamic river reaches.",
+        sensors: "Dual-frequency acoustic depth sounders, GNSS RTK heading sensor, obstacle radar.",
+        accuracy: "±1cm + 0.1%h",
+        rating: "Currents up to 5.0 m/s"
+      },
+      {
+        id: "m400",
+        name: "DJI Matrice 400 RTK",
+        category: "High-Altitude Enterprise UAV",
+        icon: "fa-plane",
+        runtime: "Extended Multi-Rotor",
+        coverage: "High-Acreage Corridor Mission",
+        useCase: "Dense airborne LiDAR scanning and terrain-penetrative elevation modeling under vegetation.",
+        sensors: "Survey-grade LiDAR module, High-res RGB metric photogrammetry sensor.",
+        accuracy: "< 5cm RMSEz",
+        rating: "Up to 5,000m AMSL"
+      },
+      {
+        id: "m350",
+        name: "DJI Matrice 350 RTK",
+        category: "Survey Flagship UAV",
+        icon: "fa-helicopter",
+        runtime: "Dual Battery Redundancy",
+        coverage: "Site-Scale Engineering Mission",
+        useCase: "Photogrammetric mapping, dyke alignment verification, and structure enumeration.",
+        sensors: "Mechanical shutter metric mapping payload.",
+        accuracy: "< 2.5cm GSD",
+        rating: "IP55 Weather Resistance"
+      },
+      {
+        id: "trinity",
+        name: "Quantum Systems Trinity F90+",
+        category: "Long-Range eVTOL Fixed-Wing",
+        icon: "fa-jet-fighter-up",
+        runtime: "90 min Mission Flight",
+        coverage: "Regional Corridor / Watershed",
+        useCase: "Large-scale linear infrastructure surveys, highway alignments, and wide-basin river reaches.",
+        sensors: "High-resolution metric payload compartment.",
+        accuracy: "< 3cm Absolute",
+        rating: "Over 700 Ha per flight"
+      },
+      {
+        id: "dgps",
+        name: "CHCNAV Multi-Frequency DGPS",
+        category: "Millimeter Ground Control Network",
+        icon: "fa-tower-broadcast",
+        runtime: "Full-Day Continuous",
+        coverage: "Baselines across Northeast Reach",
+        useCase: "Static control networks, base station corrections, benchmark monuments, and RTK stakeouts.",
+        sensors: "Multi-constellation GNSS (GPS, GLONASS, Galileo, BeiDou).",
+        accuracy: "8mm Hz / 15mm Vt",
+        rating: "Internal UHF & GSM telemetry"
+      }
+    ];
+
+    function renderHardware() {
+      const listEl = document.getElementById("hardware-list");
+      if (!listEl) return;
+      listEl.innerHTML = "";
+
+      hardwareFleet.forEach((hw) => {
+        const isActive = hw.id === activeHardwareId;
+        const item = document.createElement("div");
+        item.setAttribute("data-hw-id", hw.id);
+        
+        item.className = `p-4 rounded-xl border transition-all cursor-pointer flex items-center justify-between ${
+          isActive 
+            ? "border-2 border-blue-600 bg-blue-50/70 shadow-sm" 
+            : "border-border-subtle bg-white hover:border-slate-300 hover:shadow-sm"
+        }`;
+        
+        item.onclick = () => selectHardware(hw.id);
+        
+        item.innerHTML = `
+          <div class="flex items-center gap-3.5">
+            <div class="hw-icon-box w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+              isActive ? 'bg-blue-600 text-white' : 'bg-surface-slate-subtle text-slate-600'
+            }">
+              <i class="fa-solid ${hw.icon} text-base"></i>
+            </div>
+            <div>
+              <h4 class="font-display text-sm font-bold text-on-surface">${hw.name}</h4>
+              <p class="text-xs text-text-secondary">${hw.category}</p>
+            </div>
+          </div>
+          <i class="fa-solid fa-chevron-right text-xs transition-colors ${
+            isActive ? 'text-blue-600 font-bold' : 'text-slate-400'
+          }"></i>
+        `;
+        listEl.appendChild(item);
+      });
+
+      const initialSelected = hardwareFleet.find(h => h.id === activeHardwareId) || hardwareFleet[0];
+      renderHwDetails(initialSelected);
+    }
+
+    function selectHardware(id) {
+      activeHardwareId = id;
+      
+      document.querySelectorAll("#hardware-list > div").forEach(item => {
+        const itemId = item.getAttribute("data-hw-id");
+        const isActive = itemId === id;
+        const iconBox = item.querySelector(".hw-icon-box");
+        const arrow = item.querySelector(".fa-chevron-right");
+
+        if (isActive) {
+          item.className = "p-4 rounded-xl border-2 border-blue-600 bg-blue-50/70 shadow-sm transition-all cursor-pointer flex items-center justify-between";
+          if (iconBox) iconBox.className = "hw-icon-box w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors bg-blue-600 text-white";
+          if (arrow) arrow.className = "fa-solid fa-chevron-right text-xs transition-colors text-blue-600 font-bold";
+        } else {
+          item.className = "p-4 rounded-xl border border-border-subtle bg-white hover:border-slate-300 hover:shadow-sm transition-all cursor-pointer flex items-center justify-between";
+          if (iconBox) iconBox.className = "hw-icon-box w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors bg-surface-slate-subtle text-slate-600";
+          if (arrow) arrow.className = "fa-solid fa-chevron-right text-xs transition-colors text-slate-400";
         }
       });
+
+      const hw = hardwareFleet.find(h => h.id === id);
+      if (hw) renderHwDetails(hw);
     }
 
-    function fitCameraToObject(obj) {
-      const box = new THREE.Box3().setFromObject(obj);
-      const center = box.getCenter(new THREE.Vector3());
-      const size = box.getSize(new THREE.Vector3());
+    function renderHwDetails(hw) {
+      const container = document.getElementById("hardware-details");
+      if (!container) return;
 
-      // Center model
-      obj.position.x -= center.x;
-      obj.position.y -= center.y;
-      obj.position.z -= center.z;
+      container.innerHTML = `
+        <div class="flex items-center justify-between mb-4">
+          <span class="px-3 py-1 rounded bg-blue-50 text-blue-700 text-xs font-mono font-semibold tracking-wider uppercase border border-blue-100">
+            ${hw.category}
+          </span>
+          <div class="flex items-center gap-2 text-xs font-mono text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded border border-emerald-200">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span>CALIBRATED &amp; READY</span>
+          </div>
+        </div>
 
-      const maxDim = Math.max(size.x, size.y, size.z);
-      const fov = modalCamera.fov * (Math.PI / 180);
-      let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2)) * 1.6;
-      cameraZ = Math.max(cameraZ, 2.0);
+        <h3 class="font-display text-2xl font-bold text-on-surface mb-2">${hw.name}</h3>
+        <p class="text-xs sm:text-sm text-text-secondary mb-6 leading-relaxed">${hw.useCase}</p>
 
-      modalCamera.position.set(cameraZ * 0.7, cameraZ * 0.5, cameraZ);
-      modalCamera.near = cameraZ / 100;
-      modalCamera.far = cameraZ * 100;
-      modalCamera.updateProjectionMatrix();
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+          <div class="p-4 rounded-lg bg-surface-slate-subtle border border-border-subtle">
+            <span class="text-[11px] font-mono text-text-secondary uppercase">MISSION RUNTIME</span>
+            <div class="font-display text-lg font-bold text-on-surface mt-1">${hw.runtime}</div>
+            <p class="text-xs text-text-secondary mt-0.5">High-endurance power redundancy</p>
+          </div>
+          <div class="p-4 rounded-lg bg-surface-slate-subtle border border-border-subtle">
+            <span class="text-[11px] font-mono text-text-secondary uppercase">OPERATIONAL CAPACITY</span>
+            <div class="font-display text-lg font-bold text-on-surface mt-1">${hw.coverage}</div>
+            <p class="text-xs text-text-secondary mt-0.5">${hw.rating}</p>
+          </div>
+        </div>
 
-      modalControls.target.set(0, 0, 0);
-      modalControls.maxDistance = cameraZ * 10;
-      modalControls.update();
+        <div class="p-4 rounded-lg border border-border-subtle bg-slate-50 mb-6">
+          <div class="text-xs font-mono font-bold text-blue-600 tracking-wider uppercase mb-2">Integrated Sensor Payloads:</div>
+          <p class="text-xs sm:text-sm text-on-surface font-medium mb-3">${hw.sensors}</p>
+          <div class="grid grid-cols-2 gap-2 text-center text-xs font-mono pt-3 border-t border-border-subtle text-text-secondary">
+            <div>
+              <span class="block text-slate-400 text-[10px]">VERIFIED ACCURACY</span>
+              <span class="font-bold text-on-surface">${hw.accuracy}</span>
+            </div>
+            <div>
+              <span class="block text-slate-400 text-[10px]">DEPLOYMENT PROFILE</span>
+              <span class="font-bold text-on-surface">${hw.rating}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between text-xs font-mono text-text-secondary pt-3 border-t border-border-subtle">
+          <div class="flex items-center gap-1.5 text-blue-600">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>ISO 17123-5 Geodetic Verification</span>
+          </div>
+          <a class="text-blue-600 hover:underline font-semibold" href="tel:+919957187257">Mobilize Equipment →</a>
+        </div>
+      `;
     }
 
-    window.launchInteractiveViewer = function(type, fileUrl, label) {
-      const modal = document.getElementById('model-modal');
-      const loader = document.getElementById('canvas-loader');
-      document.getElementById('modal-title').innerText = label;
-      document.getElementById('modal-path').innerText = fileUrl;
-
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      loader.classList.remove('hidden');
-      loader.innerHTML = `
-        <i class="fa-solid fa-circle-notch fa-spin text-3xl text-cyan-400 mb-3"></i>
-        <span class="text-xs font-mono text-slate-300">Streaming ${label}...</span>
-      `;
-
-      if (!modalRenderer) {
-        initModalViewer();
-      }
-
-      if (currentLoadedMesh) {
-        modalScene.remove(currentLoadedMesh);
-        currentLoadedMesh = null;
-      }
-
-      const resolvedUrl = fileUrl.startsWith('./') ? fileUrl : './' + fileUrl;
-
-      if (type === 'glb') {
-        const gltfLoader = new GLTFLoader();
-        gltfLoader.load(
-          resolvedUrl,
-          (gltf) => {
-            currentLoadedMesh = gltf.scene;
-            modalScene.add(currentLoadedMesh);
-            fitCameraToObject(currentLoadedMesh);
-            loader.classList.add('hidden');
-          },
-          (xhr) => {
-            if (xhr.lengthComputable) {
-              const percent = Math.round((xhr.loaded / xhr.total) * 100);
-              loader.querySelector('span').innerText = `Streaming GLB: ${percent}%`;
-            }
-          },
-          (error) => {
-            console.error("GLB Load Error:", error);
-            loader.innerHTML = `
-              <div class="text-center p-4 bg-slate-900 border border-rose-500/50 rounded-lg max-w-md">
-                <i class="fa-solid fa-triangle-exclamation text-rose-500 text-2xl mb-2"></i>
-                <div class="text-xs font-mono text-rose-400">Failed to load GLB: Check path ${resolvedUrl}</div>
-                <p class="text-[11px] text-slate-400 mt-2">Serve the folder via HTTP server (e.g. GitHub Pages or Live Server), not direct file:// protocol.</p>
-              </div>
-            `;
-          }
-        );
-      } else if (type === 'ply') {
-        const plyLoader = new PLYLoader();
-        plyLoader.load(
-          resolvedUrl,
-          (geometry) => {
-            geometry.computeVertexNormals();
-            let material;
-            if (geometry.hasAttribute('color')) {
-              material = new THREE.PointsMaterial({ size: 0.08, vertexColors: true });
-            } else {
-              material = new THREE.PointsMaterial({ size: 0.08, color: 0x38bdf8 });
-            }
-            currentLoadedMesh = new THREE.Points(geometry, material);
-            modalScene.add(currentLoadedMesh);
-            fitCameraToObject(currentLoadedMesh);
-            loader.classList.add('hidden');
-          },
-          (xhr) => {
-            if (xhr.lengthComputable) {
-              const percent = Math.round((xhr.loaded / xhr.total) * 100);
-              loader.querySelector('span').innerText = `Streaming Point Cloud: ${percent}%`;
-            }
-          },
-          (error) => {
-            console.error("PLY Load Error:", error);
-            loader.innerHTML = `
-              <div class="text-center p-4 bg-slate-900 border border-rose-500/50 rounded-lg max-w-md">
-                <i class="fa-solid fa-triangle-exclamation text-rose-500 text-2xl mb-2"></i>
-                <div class="text-xs font-mono text-rose-400">Failed to load PLY: Check path ${resolvedUrl}</div>
-                <p class="text-[11px] text-slate-400 mt-2">Check console for MIME or size issues.</p>
-              </div>
-            `;
-          }
-        );
-      }
-    };
-
-    window.closeInteractiveViewer = function() {
-      const modal = document.getElementById('model-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-      if (currentLoadedMesh) {
-        modalScene.remove(currentLoadedMesh);
-        currentLoadedMesh = null;
-      }
-    };
-
-    // 4. GIS & MINING MODAL APPS
-    window.inspectContourGeoJSON = function(url) {
-      const modal = document.getElementById('gis-modal');
-      const body = document.getElementById('gis-modal-body');
-      document.getElementById('gis-modal-title').innerText = "Vector Contours Inspector (GeoJSON)";
-      
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-
-      body.innerHTML = `
-        <div class="h-full flex flex-col">
-          <div class="p-3 bg-slate-900 border border-slate-800 rounded-lg font-mono text-xs text-slate-300 mb-3 flex items-center justify-between">
-            <span>FILE: <strong>${url}</strong></span>
-            <span class="text-cyan-400">EPSG: 32646 (UTM Zone 46N)</span>
-          </div>
-          <div id="contour-map" class="flex-1 w-full rounded-xl border border-slate-800 bg-slate-950"></div>
-        </div>
-      `;
-
-      setTimeout(() => {
-        const cMap = L.map('contour-map').setView([26.6, 93.8], 14);
-        L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', { maxZoom: 20 }).addTo(cMap);
-
-        fetch('./' + url)
-          .then(res => res.json())
-          .then(data => {
-            const layer = L.geoJSON(data, {
-              style: { color: '#38bdf8', weight: 1.5, opacity: 0.8 },
-              onEachFeature: (feature, l) => {
-                const elev = feature.properties ? (feature.properties.elevation || feature.properties.Elevation || "N/A") : "N/A";
-                l.bindPopup(`<strong>Contour Elevation:</strong> ${elev} m`);
-              }
-            }).addTo(cMap);
-            if (layer.getBounds().isValid()) cMap.fitBounds(layer.getBounds());
-          })
-          .catch(err => {
-            console.error(err);
-            document.getElementById('contour-map').innerHTML = `<div class="p-4 text-xs font-mono text-rose-400">Could not fetch contours.geojson. Ensure server is running.</div>`;
-          });
-      }, 100);
-    };
-
-    window.openPMTilesViewer = function(path) {
-      const modal = document.getElementById('gis-modal');
-      const body = document.getElementById('gis-modal-body');
-      document.getElementById('gis-modal-title').innerText = "Urban Cadastre & Ortho PMTiles";
-
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-
-      body.innerHTML = `
-        <div class="space-y-4">
-          <div class="p-4 bg-slate-900 border border-slate-800 rounded-xl">
-            <h4 class="text-sm font-bold text-white font-mono flex items-center gap-2">
-              <i class="fa-solid fa-layer-group text-emerald-400"></i>
-              <span>Cloud-Optimized PMTiles Dataset</span>
-            </h4>
-            <p class="text-xs text-slate-400 mt-1">Urban_City_Ortho.pmtiles enables range-request tile streaming for large drone rasters without dedicated tile server backends.</p>
-            <div class="mt-4 p-3 bg-slate-950 rounded border border-slate-800 text-xs font-mono text-slate-300 space-y-1">
-              <div>FILE: Urban_Plan/Urban_City_Ortho.pmtiles</div>
-              <div>GSD: 2.1 cm/px</div>
-              <div>FORMAT: ProtoMap Vector/Raster PMTiles Spec v3</div>
-            </div>
-            <div class="mt-4 flex gap-3">
-              <a href="./${path}" download class="px-4 py-2 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-mono font-semibold transition">
-                <i class="fa-solid fa-download mr-1"></i> Direct Download PMTiles
-              </a>
-              <a href="https://protomaps.github.io/PMTiles/" target="_blank" class="px-4 py-2 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-mono transition">
-                Open in Web PMTiles Inspector →
-              </a>
-            </div>
-          </div>
-        </div>
-      `;
-    };
-
-    window.openMiningViewerModal = function() {
-      const modal = document.getElementById('gis-modal');
-      const body = document.getElementById('gis-modal-body');
-      document.getElementById('gis-modal-title').innerText = "Mine Site Volumetric & Surface Inspection";
-
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-
-      body.innerHTML = `
-        <div class="space-y-4">
-          <div class="p-4 bg-slate-900 border border-slate-800 rounded-xl">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-mono px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-800">MINE VOLUMETRICS</span>
-              <span class="text-xs font-mono text-slate-400">EPSG: 32646</span>
-            </div>
-            <h4 class="text-base font-bold text-white mb-2">Mine Site Elevation Models &amp; Point Clouds</h4>
-            <p class="text-xs text-slate-400 leading-relaxed mb-4">
-              Your repository contains raw GeoTIFF surfaces (DSM and DTM) and compressed point clouds for cut &amp; fill volume calculation:
-            </p>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 font-mono text-xs mb-4">
-              <div class="p-3 bg-slate-950 rounded border border-slate-800">
-                <span class="text-amber-400 font-bold block mb-1">Tiles_DSM.tif</span>
-                <span class="text-slate-400 text-[11px]">Digital Surface Model (Canopy &amp; Benches)</span>
-                <a href="./mine-site-viewer-main/Tiles_DSM.tif" download class="block mt-2 text-cyan-400 hover:underline">Download TIFF →</a>
-              </div>
-              <div class="p-3 bg-slate-950 rounded border border-slate-800">
-                <span class="text-emerald-400 font-bold block mb-1">Tiles_DTM.tif</span>
-                <span class="text-slate-400 text-[11px]">Digital Terrain Model (Bare Ground)</span>
-                <a href="./mine-site-viewer-main/Tiles_DTM.tif" download class="block mt-2 text-cyan-400 hover:underline">Download TIFF →</a>
-              </div>
-              <div class="p-3 bg-slate-950 rounded border border-slate-800">
-                <span class="text-cyan-400 font-bold block mb-1">mine-site-viewer.laz</span>
-                <span class="text-slate-400 text-[11px]">High-Density Point Cloud</span>
-                <a href="./mine-site-viewer-main/mine-site-viewer.laz" download class="block mt-2 text-cyan-400 hover:underline">Download LAZ →</a>
-              </div>
-            </div>
-
-            <div class="p-3 bg-slate-950 rounded border border-slate-800 text-xs font-mono text-slate-300">
-              <span class="text-amber-400 font-bold">Cut &amp; Fill Audit Engine:</span> Subtracting DTM from DSM provides audit-ready tonnage estimates for open-cast pit benches and limestone extraction leases.
-            </div>
-          </div>
-        </div>
-      `;
-    };
-
-    window.closeGisModal = function() {
-      const modal = document.getElementById('gis-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    };
-
-    // 5. PROJECT DATASET & DRAWER CONTROLS
+    // 5. PROJECTS DATASET & DRAWER CONTROLS
     const projectData = [
       {
         id: "buridehing",
@@ -1129,7 +1040,7 @@
       }
     ];
 
-    window.renderProjects = function(items) {
+    function renderProjects(items) {
       const container = document.getElementById("projects-grid");
       if (!container) return;
       container.innerHTML = "";
@@ -1161,9 +1072,9 @@
         `;
         container.appendChild(card);
       });
-    };
+    }
 
-    window.filterProjects = function(cat, btn) {
+    function filterProjects(cat, btn) {
       document.querySelectorAll(".filter-tab-btn").forEach(b => {
         b.className = "filter-tab-btn px-3.5 py-1.5 rounded-md bg-white border border-border-strong text-text-secondary text-xs font-medium hover:bg-surface-slate-subtle transition-colors";
       });
@@ -1174,9 +1085,9 @@
       } else {
         renderProjects(projectData.filter(p => p.category === cat));
       }
-    };
+    }
 
-    window.openDrawer = function(id) {
+    function openDrawer(id) {
       const p = projectData.find(item => item.id === id);
       const drawer = document.getElementById("detail-drawer");
       const body = document.getElementById("drawer-body");
@@ -1202,148 +1113,15 @@
       `;
       drawer.classList.remove("hidden");
       drawer.classList.add("flex");
-    };
+    }
 
-    window.closeDrawer = function() {
+    function closeDrawer() {
       const drawer = document.getElementById("detail-drawer");
       drawer.classList.add("hidden");
       drawer.classList.remove("flex");
-    };
-
-    // 6. HARDWARE FLEET MASTER-DETAIL
-    let activeHardwareId = "apache6";
-
-    const hardwareFleet = [
-      {
-        id: "apache6",
-        name: "CHCNAV APACHE 6",
-        category: "Multibeam Bathymetry USV",
-        icon: "fa-ship",
-        runtime: "120 min Autonomous",
-        coverage: "Standard Reservoir / River Cross-Section",
-        useCase: "Autonomous riverbed & reservoir hydrographic sounding in dynamic river reaches.",
-        sensors: "Dual-frequency acoustic depth sounders, GNSS RTK heading sensor, obstacle radar.",
-        accuracy: "±1cm + 0.1%h",
-        rating: "Currents up to 5.0 m/s"
-      },
-      {
-        id: "m400",
-        name: "DJI Matrice 400 RTK",
-        category: "High-Altitude Enterprise UAV",
-        icon: "fa-plane",
-        runtime: "Extended Multi-Rotor",
-        coverage: "High-Acreage Corridor Mission",
-        useCase: "Dense airborne LiDAR scanning and terrain-penetrative elevation modeling under vegetation.",
-        sensors: "Survey-grade LiDAR module, High-res RGB metric photogrammetry sensor.",
-        accuracy: "< 5cm RMSEz",
-        rating: "Up to 5,000m AMSL"
-      },
-      {
-        id: "m350",
-        name: "DJI Matrice 350 RTK",
-        category: "Survey Flagship UAV",
-        icon: "fa-helicopter", // Fixed: fa-drone is not in FontAwesome free, replaced with valid icon
-        runtime: "Dual Battery Redundancy",
-        coverage: "Site-Scale Engineering Mission",
-        useCase: "Photogrammetric mapping, dyke alignment verification, and structure enumeration.",
-        sensors: "Mechanical shutter metric mapping payload.",
-        accuracy: "< 2.5cm GSD",
-        rating: "IP55 Weather Resistance"
-      },
-      {
-        id: "trinity",
-        name: "Quantum Systems Trinity F90+",
-        category: "Long-Range eVTOL Fixed-Wing",
-        icon: "fa-jet-fighter-up",
-        runtime: "90 min Mission Flight",
-        coverage: "Regional Corridor / Watershed",
-        useCase: "Large-scale linear infrastructure surveys, highway alignments, and wide-basin river reaches.",
-        sensors: "High-resolution metric payload compartment.",
-        accuracy: "< 3cm Absolute",
-        rating: "Over 700 Ha per flight"
-      },
-      {
-        id: "dgps",
-        name: "CHCNAV Multi-Frequency DGPS",
-        category: "Millimeter Ground Control Network",
-        icon: "fa-tower-broadcast",
-        runtime: "Full-Day Continuous",
-        coverage: "Baselines across Northeast Reach",
-        useCase: "Static control networks, base station corrections, benchmark monuments, and RTK stakeouts.",
-        sensors: "Multi-constellation GNSS (GPS, GLONASS, Galileo, BeiDou).",
-        accuracy: "8mm Hz / 15mm Vt",
-        rating: "Internal UHF & GSM telemetry"
-      }
-    ];
-
-    function renderHardware() {
-      const listEl = document.getElementById("hardware-list");
-      if (!listEl) return;
-      listEl.innerHTML = "";
-
-      hardwareFleet.forEach((hw) => {
-        const isActive = hw.id === activeHardwareId;
-        const item = document.createElement("div");
-        item.setAttribute("data-hw-id", hw.id);
-        
-        // Dynamic active class styling
-        item.className = `p-4 rounded-xl border transition-all cursor-pointer flex items-center justify-between ${
-          isActive 
-            ? "border-2 border-blue-600 bg-blue-50/70 shadow-sm" 
-            : "border-border-subtle bg-white hover:border-slate-300 hover:shadow-sm"
-        }`;
-        
-        item.onclick = () => selectHardware(hw.id);
-        
-        item.innerHTML = `
-          <div class="flex items-center gap-3.5">
-            <div class="hw-icon-box w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
-              isActive ? 'bg-blue-600 text-white' : 'bg-surface-slate-subtle text-slate-600'
-            }">
-              <i class="fa-solid ${hw.icon} text-base"></i>
-            </div>
-            <div>
-              <h4 class="font-display text-sm font-bold text-on-surface">${hw.name}</h4>
-              <p class="text-xs text-text-secondary">${hw.category}</p>
-            </div>
-          </div>
-          <i class="fa-solid fa-chevron-right text-xs transition-colors ${
-            isActive ? 'text-blue-600 font-bold' : 'text-slate-400'
-          }"></i>
-        `;
-        listEl.appendChild(item);
-      });
-
-      const selected = hardwareFleet.find(h => h.id === activeHardwareId) || hardwareFleet[0];
-      renderHwDetails(selected);
     }
 
-    function selectHardware(id) {
-      activeHardwareId = id;
-      
-      // Update DOM elements cleanly without breaking child icons
-      document.querySelectorAll("#hardware-list > div").forEach(item => {
-        const itemId = item.getAttribute("data-hw-id");
-        const isActive = itemId === id;
-        const iconBox = item.querySelector(".hw-icon-box");
-        const arrow = item.querySelector(".fa-chevron-right");
-
-        if (isActive) {
-          item.className = "p-4 rounded-xl border-2 border-blue-600 bg-blue-50/70 shadow-sm transition-all cursor-pointer flex items-center justify-between";
-          if (iconBox) iconBox.className = "hw-icon-box w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors bg-blue-600 text-white";
-          if (arrow) arrow.className = "fa-solid fa-chevron-right text-xs transition-colors text-blue-600 font-bold";
-        } else {
-          item.className = "p-4 rounded-xl border border-border-subtle bg-white hover:border-slate-300 hover:shadow-sm transition-all cursor-pointer flex items-center justify-between";
-          if (iconBox) iconBox.className = "hw-icon-box w-10 h-10 rounded-lg flex items-center justify-center shrink-0 transition-colors bg-surface-slate-subtle text-slate-600";
-          if (arrow) arrow.className = "fa-solid fa-chevron-right text-xs transition-colors text-slate-400";
-        }
-      });
-
-      const hw = hardwareFleet.find(h => h.id === id);
-      if (hw) renderHwDetails(hw);
-    }
-
-    // 7. LEAFLET SATELLITE MAP
+    // 6. LEAFLET SATELLITE MAP
     function initMap() {
       const mapContainer = document.getElementById('interactive-map');
       if (!mapContainer) return;
@@ -1404,7 +1182,7 @@
         });
     }
 
-    // 8. THREE.JS 3D HYDRODYNAMIC SIMULATION
+    // 7. THREE.JS 3D HYDRODYNAMIC SIMULATION
     function initThreeJS() {
       const container = document.getElementById('threejs-container');
       if (!container) return;
@@ -1625,7 +1403,7 @@
       animate();
     }
 
-    // Window Init
+    // Window Load Trigger
     window.addEventListener("DOMContentLoaded", () => {
       renderProjects(projectData);
       renderHardware();
