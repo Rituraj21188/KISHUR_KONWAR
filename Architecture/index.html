@@ -86,12 +86,12 @@
       text-align: center;
       color: #58a6ff;
       font-size: 14px;
-      letter-spacing: 0.5px;
       font-family: monospace;
+      z-index: 20;
     }
     .spinner {
-      width: 32px;
-      height: 32px;
+      width: 34px;
+      height: 34px;
       margin: 0 auto 12px auto;
       border: 3px solid rgba(88, 166, 255, 0.2);
       border-top: 3px solid #58a6ff;
@@ -102,17 +102,17 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    #error-details {
+    #error-box {
       display: none;
-      max-width: 320px;
       margin-top: 10px;
-      padding: 10px;
+      padding: 10px 14px;
       background: rgba(239, 68, 68, 0.12);
       border: 1px solid rgba(239, 68, 68, 0.4);
       border-radius: 8px;
       color: #fca5a5;
       font-size: 11px;
       line-height: 1.4;
+      max-width: 320px;
     }
   </style>
 
@@ -127,20 +127,18 @@
 </head>
 <body>
 
-  <!-- Loading State & Error Container -->
   <div id="loading-container">
     <div class="spinner" id="loading-spinner"></div>
-    <div id="loading-text">Streaming cloud.ply...</div>
-    <div id="error-details"></div>
+    <div id="loading-text">Loading Point Cloud...</div>
+    <div id="error-box"></div>
   </div>
 
-  <!-- Interactive Controls UI -->
   <div id="ui">
     <h3>Point Cloud Controls</h3>
     
     <div class="control-group">
       <span>Point Size</span>
-      <input type="range" id="size-slider" min="0.005" max="0.15" step="0.005" value="0.03">
+      <input type="range" id="size-slider" min="0.005" max="0.1" step="0.005" value="0.025">
     </div>
 
     <div class="control-group">
@@ -166,11 +164,10 @@
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     import { PLYLoader } from 'three/addons/loaders/PLYLoader.js';
 
-    // 1. Scene & Renderer Setup
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0d1117);
 
-    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.01, 50000);
+    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.01, 10000);
     camera.position.set(0, 10, 20);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
@@ -188,62 +185,57 @@
     let initialCameraPosition = new THREE.Vector3();
     let initialTarget = new THREE.Vector3(0, 0, 0);
 
-    // 2. Resolve Path explicitly to current folder
-    const targetUrl = new URL('cloud.ply', window.location.href).href;
-
-    const loader = new PLYLoader();
     const loadingText = document.getElementById('loading-text');
     const loadingSpinner = document.getElementById('loading-spinner');
-    const errorDetails = document.getElementById('error-details');
+    const errorBox = document.getElementById('error-box');
 
-    // Fetch as raw ArrayBuffer first to detect Git LFS pointer files
-    fetch(targetUrl)
-      .then(async (response) => {
+    // Resolve URL directly against current execution path
+    const plyUrl = new URL('cloud.ply', window.location.href).href;
+
+    async function fetchAndRenderPLY() {
+      try {
+        loadingText.innerText = "Fetching cloud.ply...";
+        const response = await fetch(plyUrl);
         if (!response.ok) {
-          throw new Error(`HTTP ${response.status} ${response.statusText} - File not found at ${targetUrl}`);
+          throw new Error(`HTTP ${response.status}: Failed to locate ${plyUrl}`);
         }
 
-        const contentLength = response.headers.get('content-length');
         const buffer = await response.arrayBuffer();
 
-        // Check if file is actually a Git LFS text pointer (< 200 bytes)
+        // Check for Git LFS pointer files (< 300 bytes)
         if (buffer.byteLength < 300) {
-          const textDecoder = new TextDecoder();
-          const firstBytes = textDecoder.decode(buffer);
-          if (firstBytes.includes('git-lfs') || firstBytes.includes('version https://')) {
-            throw new Error(`Git LFS Pointer detected! The actual binary file was not committed to GitHub. Re-upload cloud.ply without Git LFS.`);
+          const text = new TextDecoder().decode(buffer);
+          if (text.includes('git-lfs') || text.includes('oid sha256')) {
+            throw new Error("Git LFS pointer detected: The actual binary cloud.ply file was not uploaded to Git.");
           }
         }
 
-        // Parse PLY from raw ArrayBuffer
-        return loader.parse(buffer);
-      })
-      .then((geometry) => {
+        loadingText.innerText = "Parsing Point Cloud...";
+        const loader = new PLYLoader();
+        const geometry = loader.parse(buffer);
+
         geometry.computeVertexNormals();
         geometry.computeBoundingBox();
         geometry.center();
 
-        // Photogrammetry Z-up to Three.js Y-up conversion
+        // Photogrammetry Z-up to Three.js Y-up
         geometry.rotateX(-Math.PI / 2);
 
         const hasColors = geometry.hasAttribute('color');
-
         pointsMaterial = new THREE.PointsMaterial({
-          size: 0.03,
+          size: 0.025,
           vertexColors: hasColors,
-          color: hasColors ? 0xffffff : 0x38bdf8,
+          color: hasColors ? 0xffffff : 0x58a6ff,
           sizeAttenuation: true
         });
 
         const pointCloud = new THREE.Points(geometry, pointsMaterial);
         scene.add(pointCloud);
 
-        // Frame camera automatically
         geometry.computeBoundingSphere();
-        const sphere = geometry.boundingSphere;
-        const radius = (sphere && sphere.radius > 0) ? sphere.radius : 10;
-        
-        camera.position.set(radius * 1.0, radius * 0.8, radius * 1.3);
+        const radius = geometry.boundingSphere?.radius || 15;
+
+        camera.position.set(radius * 0.9, radius * 0.8, radius * 1.3);
         camera.near = radius / 100;
         camera.far = radius * 100;
         camera.updateProjectionMatrix();
@@ -255,23 +247,21 @@
         initialCameraPosition.copy(camera.position);
         initialTarget.copy(controls.target);
 
-        // Hide Loading State
         document.getElementById('loading-container').style.display = 'none';
-      })
-      .catch((err) => {
-        console.error('Point Cloud Load Error:', err);
+      } catch (err) {
+        console.error("PLY Error:", err);
         loadingSpinner.style.display = 'none';
-        loadingText.innerText = 'Failed to load cloud.ply';
-        loadingText.style.color = '#ef4444';
-        errorDetails.style.display = 'block';
-        errorDetails.innerText = err.message || 'Unknown error parsing cloud.ply';
-      });
-
-    // 3. UI Controls
-    document.getElementById('size-slider').addEventListener('input', (e) => {
-      if (pointsMaterial) {
-        pointsMaterial.size = parseFloat(e.target.value);
+        loadingText.innerText = "Failed to load cloud.ply";
+        loadingText.style.color = "#ef4444";
+        errorBox.style.display = "block";
+        errorBox.innerText = err.message || "Unknown PLY error.";
       }
+    }
+
+    fetchAndRenderPLY();
+
+    document.getElementById('size-slider').addEventListener('input', (e) => {
+      if (pointsMaterial) pointsMaterial.size = parseFloat(e.target.value);
     });
 
     document.getElementById('toggle-rotate').addEventListener('change', (e) => {
@@ -281,7 +271,7 @@
     document.getElementById('bg-select').addEventListener('change', (e) => {
       const mode = e.target.value;
       if (mode === 'dark') scene.background.setHex(0x0d1117);
-      else if (mode === 'slate') scene.background.setHex(0x1e293b);
+      else if (mode === 'slate') scene.background.setHex(0x21262d);
       else if (mode === 'light') scene.background.setHex(0xf8fafc);
     });
 
@@ -291,7 +281,6 @@
       controls.update();
     });
 
-    // 4. Resize and Animation Loop
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
